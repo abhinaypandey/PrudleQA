@@ -54,11 +54,26 @@ var NP = {
             }
             chrome.tabs.executeScript(null, {
                 file: "js/inject.js"
-            })
+            });
+
+             chrome.tabs.executeScript(null, {
+                file: "js/screenshot/api.js"
+            });
+
+            chrome.tabs.executeScript(null, {
+                file: "js/screenshot/capture.js"
+            });
+
+            chrome.tabs.executeScript(null, {
+                file: "js/screenshot/page.js"
+            });
         })
     },
     screenShot: function(a) {
-        chrome.tabs.captureVisibleTab(null,{format : "png"},function(b) {
+           
+            // capture screen shot before sending to JIRA 
+           // console.log(CaptureScreenAPI.getFilename("htttp://www.google.com"));
+
 
             var username = "prasoon.rana@prudlelabs.com";
             var password = "Ladakh2012";
@@ -106,7 +121,6 @@ var NP = {
                     });
                 }
             });
-        });
         // chrome.tabs.captureVisibleTab(function(b) {
         //     var c = chrome.extension.getURL("bugreport.html");
         //     chrome.tabs.query({
