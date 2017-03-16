@@ -93,7 +93,7 @@ var NP = {
                     $.ajax({
                         url: "https://prudlelabs.atlassian.net/rest/api/2/issue/"+issueKeyid+"/attachments",
                         type: 'POST', 
-                        data : image,
+                        data : image ,
                         contentType: 'multipart/form-data',
                         beforeSend: function (xhr) {
                             xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
