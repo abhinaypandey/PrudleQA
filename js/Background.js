@@ -86,12 +86,14 @@ var NP = {
                     xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
                 },
                 success: function(data) {
+                    var image= new Image();
+                    image.src = b; 
 
                     issueKeyid = data.key;
                     $.ajax({
                         url: "https://prudlelabs.atlassian.net/rest/api/2/issue/"+issueKeyid+"/attachments",
                         type: 'POST', 
-                        data : b,
+                        data : image,
                         contentType: 'multipart/form-data',
                         beforeSend: function (xhr) {
                             xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
