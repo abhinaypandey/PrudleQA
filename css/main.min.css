@@ -285,7 +285,7 @@
     -moz-appearance: square-button;
     appearance: square-button;
     background-color: buttonface;
-    height: 55px
+    height: 30px
 }
 #NOTEPAD_controls .NOTEPAD_controls_range {
     display: inline-block;

@@ -34,8 +34,6 @@ function getFilename(contentURL) {
 //
 // Capture Handlers
 //
-
-
 function displayCaptures(filenames) {
     if (!filenames || !filenames.length) {
         show('uh-oh');

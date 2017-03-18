@@ -46,7 +46,7 @@ var NP = {
     },
     inject: function() {
         chrome.tabs.insertCSS(null, {
-            file: "css/main.min.css"
+            file: "css/main.css"
         }, function() {
             if (chrome.extension.lastError) {
                 chrome.extension.lastError.message;
@@ -54,72 +54,65 @@ var NP = {
             }
             chrome.tabs.executeScript(null, {
                 file: "js/inject.js"
-            });
-
-             chrome.tabs.executeScript(null, {
-                file: "js/screenshot/api.js"
-            });
-
-            chrome.tabs.executeScript(null, {
-                file: "js/screenshot/capture.js"
-            });
-
-            chrome.tabs.executeScript(null, {
-                file: "js/screenshot/page.js"
-            });
+            })
         })
     },
     screenShot: function(a) {
            
             // capture screen shot before sending to JIRA 
            // console.log(CaptureScreenAPI.getFilename("htttp://www.google.com"));
+            chrome.tabs.captureVisibleTab(function(dataURL) {
+                localStorage.setItem("screenshotImg", dataURL);
+                
+                var username = "prasoon.rana@prudlelabs.com";
+                var password = "Ladakh2012";
+                var issueKeyid;
+                var issue ={
+                                "fields": {
+                                    "project":
+                                    { 
+                                        "key": "PRUD"
+                                    },
+                                    "summary": "Prudle QA test issue",
+                                    "description": "Creating an issue to test Prudle QA",
+                                    "issuetype": {
+                                        "name": "Bug"
+                                    }       
+                                }
+                            };
+                $.ajax({
+                    url: "https://prudlelabs.atlassian.net/rest/api/2/issue/",
+                    type: 'POST', 
+                    data : JSON.stringify(issue),
+                    dataType: "json", 
+                    contentType: "application/json",
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
+                    },
+                    success: function(data) {
+                        alert("issue : "+data.key+" created");
+                        issueKeyid = data.key;
 
-
-            var username = "prasoon.rana@prudlelabs.com";
-            var password = "Ladakh2012";
-            var issueKeyid;
-            var issue ={
-                            "fields": {
-                                "project":
-                                { 
-                                    "key": "PRUD"
-                                },
-                                "summary": "Prudle QA test issue",
-                                "description": "Creating an issue to test Prudle QA",
-                                "issuetype": {
-                                    "name": "Bug"
-                                }       
+                        $.ajax({
+                            url: "https://prudlelabs.atlassian.net/rest/api/2/issue/"+issueKeyid+"/attachments",
+                            type: 'POST', 
+                            data: {file: fd},
+                            processData: false,
+                            contentType: 'multipart/form-data',
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
+                                xhr.setRequestHeader ("X-Atlassian-Token:nocheck");
+                            },
+                            success: function(data) {
+                                alert("issue created");
+                                
+                            },
+                            error:function(data){
+                                console.log(data);
                             }
-                        };
-            $.ajax({
-                url: "https://prudlelabs.atlassian.net/rest/api/2/issue/",
-                type: 'POST', 
-                data : JSON.stringify(issue),
-                dataType: "json", 
-                contentType: "application/json",
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
-                },
-                success: function(data) {
-                    var image= new Image();
-                    image.src = b; 
-
-                    issueKeyid = data.key;
-                    $.ajax({
-                        url: "https://prudlelabs.atlassian.net/rest/api/2/issue/"+issueKeyid+"/attachments",
-                        type: 'POST', 
-                        data : image ,
-                        contentType: 'multipart/form-data',
-                        beforeSend: function (xhr) {
-                            xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
-                            xhr.setRequestHeader ("X-Atlassian-Token:no-check");
-                        },
-                        success: function(data) {
-                            alert("issue created");
-                            
-                        }
-                    });
-                }
+                        });
+                    }
+                });
             });
         // chrome.tabs.captureVisibleTab(function(b) {
         //     var c = chrome.extension.getURL("bugreport.html");
@@ -142,6 +135,27 @@ var NP = {
         }, function(d) {
             d && d.success || window.setTimeout(Function.prototype.bind.call(NP.updateScreenshot, NP, a, b, ++c), 300)
         })
+    },
+
+    dataURItoBlob: function (dataURI) {
+        // convert base64/URLEncoded data component to raw binary data held in a string
+        var byteString;
+        if (dataURI.split(',')[0].indexOf('base64') >= 0)
+            byteString = atob(dataURI.split(',')[1]);
+        else
+            byteString = unescape(dataURI.split(',')[1]);
+
+        // separate out the mime component
+        var mimeString = dataURI.split(',')[0].split(':')[1].split(';')[0];
+
+        // write the bytes of the string to a typed array
+        var ia = new Uint8Array(byteString.length);
+        for (var i = 0; i < byteString.length; i++) {
+            ia[i] = byteString.charCodeAt(i);
+        }
+
+        return new Blob([ia], {type:mimeString});
     }
+
 };
 NP.init();

@@ -243,6 +243,7 @@ var getCSSAnimationManager = function() {
         cursor: new TextCursor,
         paragraph: null,
         panel: null,
+        hidable_control:null,
         createCanvas: function() {
             this.canvas = a.document.createElement("canvas"), this.context = this.canvas.getContext("2d"), this.canvas.setAttribute("id", "NOTEPAD"), this.buffer = document.createElement("canvas"), a.document.body.appendChild(this.canvas), a.addEventListener("resize", this.resizeBinded), a.addEventListener("scroll", this.resizeBinded), this.handleResize(), this.storeHistory()
         },
@@ -275,13 +276,19 @@ var getCSSAnimationManager = function() {
             this.canvas.width = b, this.canvas.height = c, this.restoreCanvas(), this.updatePaintStyle(), this.context.lineWidth = a
         },
         createControlPanel: function() {
+             // controle wrapper div
+            this.hidable_control = a.document.createElement("div");
+            this.hidable_control.setAttribute('id','NOTEPAD_HIDABLE_DIV');
+
             this.panel = a.document.createElement("div"), this.backBtn = a.document.createElement("div"), this.nextBtn = a.document.createElement("div");
             var b = a.document.createElement("div"),
                 c = a.document.createElement("div"),
                 d = a.document.createElement("div"),
                 e = a.document.createElement("div"),
                 f = a.document.createElement("div");
-            this.panel.setAttribute("id", "NOTEPAD_controls"), b.setAttribute("class", "NOTEPAD_controls_draw"), c.setAttribute("class", "NOTEPAD_controls_color"), d.setAttribute("class", "NOTEPAD_controls_control"), e.setAttribute("class", "NOTEPAD_controls_range alpha_control"), f.setAttribute("class", "NOTEPAD_controls_range size_control"), a.document.body.appendChild(this.panel), this.panel.appendChild(b), this.panel.appendChild(c), this.panel.appendChild(e), this.panel.appendChild(f), this.panel.appendChild(d);
+            this.panel.setAttribute("id", "NOTEPAD_controls"), b.setAttribute("class", "NOTEPAD_controls_draw"), c.setAttribute("class", "NOTEPAD_controls_color"), d.setAttribute("class", "NOTEPAD_controls_control"), e.setAttribute("class", "NOTEPAD_controls_range alpha_control"), f.setAttribute("class", "NOTEPAD_controls_range size_control"), a.document.body.appendChild(this.panel), this.hidable_control.appendChild(b), this.hidable_control.appendChild(c), this.hidable_control.appendChild(e), this.hidable_control.appendChild(f), this.hidable_control.appendChild(d),
+            this.panel.appendChild(this.hidable_control);
+
             for (var g = 0; g < this.drawOptions.length; g++) {
                 var h = this.drawOptions[g],
                     i = a.document.createElement("div");
@@ -311,9 +318,14 @@ var getCSSAnimationManager = function() {
             this.backBtn.addEventListener("click", Function.prototype.bind.call(this.handleBackButtonClick, this)), 
             this.nextBtn.addEventListener("click", Function.prototype.bind.call(this.handleForwardButtonClick, this)), 
             d.appendChild(this.backBtn), 
-            d.appendChild(this.nextBtn), 
-            d.appendChild(k), 
+            d.appendChild(this.nextBtn),
             d.appendChild(l), 
+            d.appendChild(k) 
+             
+
+           
+            //this.hidable_control.appendChild(this.panel);
+
             // d.appendChild(m),
             this.checkHistoryButtonStatus(), this.CSSAnimationManager.supported ? this.panel.addEventListener(this.CSSAnimationManager.end, Function.prototype.bind.call(this.handlePanelAppearing, this), !1) : this.panel.style.opacity = 1
         },
@@ -556,9 +568,9 @@ var getCSSAnimationManager = function() {
             var c;
             document.createEvent ? (c = document.createEvent("HTMLEvents"), c.initEvent(b, !0, !0)) : document.createEventObject && (c = document.createEventObject(), c.eventType = b), c.eventName = b, a.dispatchEvent ? a.dispatchEvent(c) : a.fireEvent && htmlEvents["on" + b] ? a.fireEvent("on" + c.eventType, c) : a[b] ? a[b]() : a["on" + b] && a["on" + b]()
         },
-        initDragging: function() {
-            this.panel.addEventListener("mousedown", this.handleDraggingStart), this.panel.addEventListener("touchstart", this.handleDraggingStart), a.document.addEventListener("mouseup", this.handleDragDone), a.document.addEventListener("touchend", this.handleDragDone);
-        },
+        // initDragging: function() {
+        //     this.panel.addEventListener("mousedown", this.handleDraggingStart), this.panel.addEventListener("touchstart", this.handleDraggingStart), a.document.addEventListener("mouseup", this.handleDragDone), a.document.addEventListener("touchend", this.handleDragDone);
+        // },
         handleDraggingStart: function(a) {
             c.pos_x = this.getBoundingClientRect().left - ("undefined" == typeof a.clientX ? a.touches[0].clientX : a.clientX), c.pos_y = this.getBoundingClientRect().top - ("undefined" == typeof a.clientY ? a.touches[0].clientY : a.clientY), this.addEventListener("mousemove", c.handleDragging), this.addEventListener("touchmove", c.handleDragging)
         },
@@ -596,7 +608,9 @@ var getCSSAnimationManager = function() {
             }, a.location.origin)
         },
         render: function(a) {
-            this.config = a || {}, this.createCanvas(), this.setLineProperty(), this.createControlPanel(), this.initDragging(), this.addMouseEventListener()
+            this.config = a || {}, this.createCanvas(), this.setLineProperty(), this.createControlPanel(), 
+            //this.initDragging(), 
+            this.addMouseEventListener()
         },
         initConfig: function() {
             "undefined" != typeof chrome ? chrome.runtime.sendMessage({

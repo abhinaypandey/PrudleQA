@@ -4,7 +4,7 @@
     "manifest_version": 2,
     "description": "Bug reporting tool",
     "background": {
-        "scripts": ["js/jquery.js","js/screenshot/api.js","js/screenshot/capture.js","js/screenshot/page.js","js/Background.js"],
+        "scripts": ["js/Background.js","js/jquery.js"],
         "persistent": false
     },
     "content_scripts" : [{
@@ -23,5 +23,5 @@
     },
     "permissions": ["tabs", "activeTab", "<all_urls>"],
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-    "web_accessible_resources": ["images/*.png","js/screenshot/api.js","js/screenshot/capture.js","js/screenshot/page.js","js/jquery.js"]
+    "web_accessible_resources": ["images/*.png","js/jquery.js"]
 }
