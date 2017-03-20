@@ -4,24 +4,25 @@
     "manifest_version": 2,
     "description": "Bug reporting tool",
     "background": {
-        "scripts": ["js/Background.js","js/jquery.js"],
+        "scripts": ["js/Background.js","js/lib/jquery.js"],
         "persistent": false
     },
     "content_scripts" : [{
         "matches": ["<all_urls>"],
-        "js" : ["js/jquery.js"],
+        "js" : ["js/lib/jquery.js"],
         "run_at": "document_end"
     }],
     "browser_action": {
         "default_title": "Prudle QA",
-        "default_icon": "images/icon38.png"
+        "default_icon": "images/icon38.png",
+        "default_popup": "popup.html"
     },
     "icons": {
         "16": "images/icon16.png",
         "48": "images/icon48.png",
         "128": "images/icon128.png"
     },
-    "permissions": ["tabs", "activeTab", "<all_urls>"],
+    "permissions": ["tabs", "activeTab", "<all_urls>","storage"],
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-    "web_accessible_resources": ["images/*.png","js/jquery.js"]
+    "web_accessible_resources": ["images/*.png","js/lib/jquery.js","js/popup.js"]
 }

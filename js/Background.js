@@ -1,6 +1,6 @@
 var NP = {
     init: function() {
-        chrome.browserAction.onClicked.addListener(this.inject), chrome.runtime.onMessage.addListener(function(a, b, c) {
+         chrome.runtime.onMessage.addListener(function(a, b, c) {
             if ("take_screen_shot" === a.method) NP.screenShot(c);
             else if ("get_pixel_color" === a.method) {
                 var d = a.point;
@@ -57,15 +57,26 @@ var NP = {
             })
         })
     },
+
+    authorize: function (){
+
+    },
     screenShot: function(a) {
-           
-            // capture screen shot before sending to JIRA 
-           // console.log(CaptureScreenAPI.getFilename("htttp://www.google.com"));
+            chrome.tabs.executeScript(null, {
+                file: "js/modal.js"
+            });
+
+            $.ajax({
+                url: "https://prudlelabs.atlassian.net/rest/api/2/project",
+                type: 'GET',
+                success: function(data) {
+                    alert(data[0].name);   
+                }
+            });
+            // capture screenshot before sending to JIRA 
             chrome.tabs.captureVisibleTab(function(dataURL) {
                 localStorage.setItem("screenshotImg", dataURL);
-                
-                var username = "prasoon.rana@prudlelabs.com";
-                var password = "Ladakh2012";
+            
                 var issueKeyid;
                 var issue ={
                                 "fields": {
@@ -86,22 +97,21 @@ var NP = {
                     data : JSON.stringify(issue),
                     dataType: "json", 
                     contentType: "application/json",
-                    beforeSend: function (xhr) {
-                        xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
-                    },
+                    // beforeSend: function (xhr) {
+                    //     xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
+                    // },
                     success: function(data) {
-                        alert("issue : "+data.key+" created");
+                        // alert("issue : "+data.key+" created");
                         issueKeyid = data.key;
 
                         $.ajax({
                             url: "https://prudlelabs.atlassian.net/rest/api/2/issue/"+issueKeyid+"/attachments",
                             type: 'POST', 
-                            data: {file: fd},
+                            data: {file: dataURL},
                             processData: false,
                             contentType: 'multipart/form-data',
                             beforeSend: function (xhr) {
-                                xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
-                                xhr.setRequestHeader ("X-Atlassian-Token:nocheck");
+                                xhr.setRequestHeader ("X-Atlassian-Token:no-check");
                             },
                             success: function(data) {
                                 alert("issue created");
@@ -109,6 +119,9 @@ var NP = {
                             },
                             error:function(data){
                                 console.log(data);
+                            },
+                            complete:function(xhr,status){
+                                console.log(xhr);
                             }
                         });
                     }

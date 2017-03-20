@@ -181,7 +181,7 @@
   box-sizing: border-box;
   line-height: normal;
   color: #777;
-  /*cursor: move;*/
+  cursor: move;
   opacity: 0;
   -webkit-animation: controlFadingIn 0.3s;
   /* Chrome, Safari, Opera */

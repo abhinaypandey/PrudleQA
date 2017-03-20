@@ -137,7 +137,7 @@
             "update_url" === a.method && (s.src = a.url, c({
                 success: !0
             }))
-        }), w.addEventListener("click", function() {
+        }), w.addEventListener("click", function() {            
             var a = document.createElement("a");
             a.download = "screenshot.jpg", a.href = s.src, a.click()
         }), x.addEventListener("click", function() {

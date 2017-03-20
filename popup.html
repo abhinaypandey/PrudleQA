@@ -9,8 +9,8 @@
 		<title>PrudleQA</title>
 		
 		<!-- Scripts -->
-		<script src="js/jquery.js"></script>
-		<script src="js/bootstrap.min.js"></script>
+		<script src="js/lib/jquery.js"></script>
+		<script src="js/lib/bootstrap.min.js"></script>
 		
 		<!-- Cascading Style Sheets -->
 		<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">		
@@ -18,25 +18,44 @@
 	
 	<body>
 	
-		<div class="container" style="width:200px;padding:30px;">
+		<div class="container" style="width:300px;padding:20px;">
             <div class="row">
                 <div class="col-md-4">
-                    <form>
+                    <form id="login-form">
                         <h4 class="form-signin-heading">Please log into JIRA</h2>
                         <div class="form-group">
-                            <label for="inputEmail1">Email address</label>
-                            <input type="email" class="form-control" id="inputEmail1" placeholder="Email">
+                            <input type="text" class="form-control" id="jiraUrl" name="jiraUrl" placeholder="JIRA url : example.atlassian.net">
                         </div>
                         <div class="form-group">
-                            <label for="inputPassword1">Password</label>
-                            <input type="password" class="form-control" id="inputPassword1" placeholder="Password">
+                            <input type="text" class="form-control" id="username" name="username" placeholder="Username">
                         </div>
-                        <button type="submit" class="btn btn-default">Sign In</button>
+                        <div class="form-group">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                        </div>
+
+                        <button type="submit" class="btn btn-primary btn-lg " id="jira-auth-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Signing In">Sign In</button>
                     </form>
+                    <span id="status-display"></span>
                 </div>
+                <div class="row" >
+                     <div class="col-xs-4" >
+                            <button type="submit" class="btn btn-primary btn-sm" id="tools-btn" style="display: none">Load tools</button>
+                    </div>
+                     <div class="col-xs-4">
+                        <form id="logout-form" style="display: none">
+                             <button type="submit" class="btn btn-primary btn-sm " id="jira-logout-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Logging out">Log out</button>
+                        </form>
+                    </div>
+                    
+                </div>
+               
+
             </div>
 
         </div>
 		
-	</body>
+    <script type="text/javascript" src="js/popup.js"></script>
+    <script type="text/javascript" ></script>
+</body>
+    
 </html>

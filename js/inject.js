@@ -568,9 +568,9 @@ var getCSSAnimationManager = function() {
             var c;
             document.createEvent ? (c = document.createEvent("HTMLEvents"), c.initEvent(b, !0, !0)) : document.createEventObject && (c = document.createEventObject(), c.eventType = b), c.eventName = b, a.dispatchEvent ? a.dispatchEvent(c) : a.fireEvent && htmlEvents["on" + b] ? a.fireEvent("on" + c.eventType, c) : a[b] ? a[b]() : a["on" + b] && a["on" + b]()
         },
-        // initDragging: function() {
-        //     this.panel.addEventListener("mousedown", this.handleDraggingStart), this.panel.addEventListener("touchstart", this.handleDraggingStart), a.document.addEventListener("mouseup", this.handleDragDone), a.document.addEventListener("touchend", this.handleDragDone);
-        // },
+        initDragging: function() {
+            this.panel.addEventListener("mousedown", this.handleDraggingStart), this.panel.addEventListener("touchstart", this.handleDraggingStart), a.document.addEventListener("mouseup", this.handleDragDone), a.document.addEventListener("touchend", this.handleDragDone);
+        },
         handleDraggingStart: function(a) {
             c.pos_x = this.getBoundingClientRect().left - ("undefined" == typeof a.clientX ? a.touches[0].clientX : a.clientX), c.pos_y = this.getBoundingClientRect().top - ("undefined" == typeof a.clientY ? a.touches[0].clientY : a.clientY), this.addEventListener("mousemove", c.handleDragging), this.addEventListener("touchmove", c.handleDragging)
         },
@@ -609,7 +609,7 @@ var getCSSAnimationManager = function() {
         },
         render: function(a) {
             this.config = a || {}, this.createCanvas(), this.setLineProperty(), this.createControlPanel(), 
-            //this.initDragging(), 
+            this.initDragging(), 
             this.addMouseEventListener()
         },
         initConfig: function() {
