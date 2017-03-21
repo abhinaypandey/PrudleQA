@@ -93,8 +93,8 @@ function logout(){
                 error:function(data){
                     console.log(data);
                     if(data){
-                        //statusDisplay.innerHTML = data.responseJSON.errorMessages[0];
-                        //statusDisplay.style.color = "red";
+                        statusDisplay.innerHTML = data.responseJSON.errorMessages[0];
+                        statusDisplay.style.color = "red";
                     }   
                     
                 },
@@ -107,6 +107,7 @@ function logout(){
                         document.getElementById('logout-form').style.display = "none";
                         document.getElementById('login-form').style.display = "block";
                         document.getElementById('tools-btn').style.display = "none";
+                        document.getElementById('issues-btn').style.display = "none";
                     });
                     $('#jira-logout-btn').button('reset');
                 }
@@ -116,17 +117,56 @@ function logout(){
     });
 }
 
-// When the popup HTML has loaded
-window.addEventListener('load', function(evt) {
-    // check for existing session on extension icon click
-    chrome.browserAction.onClicked.addListener(getSession());
 
-    statusDisplay = document.getElementById('status-display');
-    // Handle the form submit event with our signinfunction
-    document.getElementById('login-form').addEventListener('submit', login);
-    document.getElementById('logout-form').addEventListener('submit', logout);
-    document.getElementById('tools-btn').addEventListener('click', loadTools);
-});
+function loadIssues(){
+    // Cancel the form submit
+    event.preventDefault();
+
+    //var session = getSession();
+
+
+    chrome.storage.local.get(null, function(items) {
+        session= items;
+        if(items.name && items.value && items.jiraUrl){
+
+             // The URL to POST our data to
+            var issuesUrl = 'https://'+items.jiraUrl+'/rest/api/2/search?jql=project="PRUD"';
+            var issueHyperlink = 'https://prudlelabs.atlassian.net/projects/PRUD/issues/'; 
+    
+            $.ajax({
+                url: issuesUrl,
+                type: 'GET', 
+                contentType: 'application/json',
+                xhrFields: {
+                    withCredentials: true
+                },
+                beforeSend: function(xhr){
+                    $('#issues-btn').button('loading');
+                },
+                success: function(data) {
+                    if(data){
+                        $.each(data.issues,function(i){
+                              var issue = data.issues[i];
+                              $('#r'+i).html("<td><a href="+issueHyperlink+issue.key+" target='_blank'>"+issue.id+"</td><td><a href="+issueHyperlink+issue.key+"target='_blank'>"+issue.key+"</td>");
+                              
+                              $('#issues-table').append('<tr id="r'+(i+1)+'"></tr>').show();
+                         });
+                    }
+                    
+                },
+                error:function(data){
+                    statusDisplay.innerHTML = data.responseJSON.errorMessages[0];
+                    statusDisplay.style.color = "red"; 
+                    
+                },
+                complete:function(xhr,status){
+                    $('#issues-btn').button('reset');
+                }
+            });
+        }
+       
+    });
+}
 
 function isEmpty(value){
     return value==="";
@@ -141,6 +181,7 @@ function saveSession(responseData){
         document.getElementById('logout-form').style.display = "block";
         document.getElementById('login-form').style.display = "none";
         document.getElementById('tools-btn').style.display = "block";
+        document.getElementById('issues-btn').style.display = "block";
     });
     
 }
@@ -154,6 +195,7 @@ function getSession(){
             document.getElementById('logout-form').style.display = "block";
             document.getElementById('login-form').style.display = "none";
             document.getElementById('tools-btn').style.display = "block";
+            document.getElementById('issues-btn').style.display = "block";
 
         }
        
@@ -174,4 +216,20 @@ function loadTools(){
     });
    
 }
+
+// When the popup HTML has loaded
+window.addEventListener('load', function(evt) {
+    // check for existing session on extension icon click
+    chrome.browserAction.onClicked.addListener(getSession());
+
+    statusDisplay = document.getElementById('status-display');
+    // Handle the form submit event with our signinfunction
+    document.getElementById('login-form').addEventListener('submit', login);
+    document.getElementById('logout-form').addEventListener('submit', logout);
+    document.getElementById('tools-btn').addEventListener('click', loadTools);
+    document.getElementById('issues-btn').addEventListener('click', loadIssues);
+    
+});
+
+
 

@@ -2,12 +2,15 @@ var NP = {
     init: function() {
          chrome.runtime.onMessage.addListener(function(a, b, c) {
             if ("take_screen_shot" === a.method) NP.screenShot(c);
+            else if ("createIssue" === a.method) NP.createIssue(b);
             else if ("get_pixel_color" === a.method) {
                 var d = a.point;
                 NP.getPixelColor(d, c)
             } else "save_data" === a.method ? NP.saveData(a.config) : "get_data" === a.method && NP.getData(c);
             return !0
-        })
+        });
+
+        
     },
     getPixelColor: function(a, b) {
         chrome.tabs.captureVisibleTab(null, null, function(c) {
@@ -52,80 +55,128 @@ var NP = {
                 chrome.extension.lastError.message;
                 alert("We are sorry, but chrome reserved pages (new tab, extensions, etc) and chrome web store are not supported. Please try another page.")
             }
+
             chrome.tabs.executeScript(null, {
                 file: "js/inject.js"
             })
-        })
+        });
+    },
+
+    injectBootstrap: function(){
+        chrome.tabs.insertCSS(null, {
+        file: "css/bootstrap.min.css"
+        }, function() {
+            if (chrome.extension.lastError) {
+                chrome.extension.lastError.message;
+                alert("We are sorry, but chrome reserved pages (new tab, extensions, etc) and chrome web store are not supported. Please try another page.")
+            }
+
+            chrome.tabs.executeScript(null, {
+                file: "js/lib/jquery.js"
+            });
+            chrome.tabs.executeScript(null, {
+                file: "js/lib/bootstrap.min.js"
+            });
+        });
     },
 
     authorize: function (){
 
     },
     screenShot: function(a) {
-            chrome.tabs.executeScript(null, {
-                file: "js/modal.js"
+
+            chrome.tabs.insertCSS(null, {
+            file: "css/bootstrap.min.css",
+            allFrames: true
+            }, function() {
+                if (chrome.extension.lastError) {
+                    chrome.extension.lastError.message;
+                    alert("We are sorry, but chrome reserved pages (new tab, extensions, etc) and chrome web store are not supported. Please try another page.")
+                }
+
+                 chrome.tabs.executeScript(null, {
+                    file: "js/lib/jquery.js",
+                    allFrames: true
+                });
+
+                chrome.tabs.executeScript(null, {
+                    file: "js/lib/bootstrap.min.js",
+                    allFrames: true
+                });
+                
+                chrome.tabs.executeScript(null, {
+                    file: "js/modal.js"
+                });
             });
 
-            $.ajax({
-                url: "https://prudlelabs.atlassian.net/rest/api/2/project",
-                type: 'GET',
-                success: function(data) {
-                    alert(data[0].name);   
-                }
+            chrome.runtime.sendMessage({
+                    method: "exit_toolbar"
             });
+
+            // $.ajax({
+            //     url: "https://prudlelabs.atlassian.net/rest/api/2/project",
+            //     type: 'GET',
+            //     success: function(data) {
+            //         alert(data[0].name);   
+            //     }
+            // });
+
             // capture screenshot before sending to JIRA 
             chrome.tabs.captureVisibleTab(function(dataURL) {
-                localStorage.setItem("screenshotImg", dataURL);
-            
-                var issueKeyid;
-                var issue ={
-                                "fields": {
-                                    "project":
-                                    { 
-                                        "key": "PRUD"
-                                    },
-                                    "summary": "Prudle QA test issue",
-                                    "description": "Creating an issue to test Prudle QA",
-                                    "issuetype": {
-                                        "name": "Bug"
-                                    }       
-                                }
-                            };
-                $.ajax({
-                    url: "https://prudlelabs.atlassian.net/rest/api/2/issue/",
-                    type: 'POST', 
-                    data : JSON.stringify(issue),
-                    dataType: "json", 
-                    contentType: "application/json",
-                    // beforeSend: function (xhr) {
-                    //     xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
-                    // },
-                    success: function(data) {
-                        // alert("issue : "+data.key+" created");
-                        issueKeyid = data.key;
-
-                        $.ajax({
-                            url: "https://prudlelabs.atlassian.net/rest/api/2/issue/"+issueKeyid+"/attachments",
-                            type: 'POST', 
-                            data: {file: dataURL},
-                            processData: false,
-                            contentType: 'multipart/form-data',
-                            beforeSend: function (xhr) {
-                                xhr.setRequestHeader ("X-Atlassian-Token:no-check");
-                            },
-                            success: function(data) {
-                                alert("issue created");
-                                
-                            },
-                            error:function(data){
-                                console.log(data);
-                            },
-                            complete:function(xhr,status){
-                                console.log(xhr);
-                            }
-                        });
-                    }
+                chrome.storage.local.set({'screenshotImg': dataURL}, function() {
+                    // Notify that we saved.
+                    
                 });
+            
+                // var issueKeyid;
+                // var issue ={
+                //                 "fields": {
+                //                     "project":
+                //                     { 
+                //                         "key": "PRUD"
+                //                     },
+                //                     "summary": "Prudle QA test issue",
+                //                     "description": "Creating an issue to test Prudle QA",
+                //                     "issuetype": {
+                //                         "name": "Bug"
+                //                     }       
+                //                 }
+                //             };
+                // $.ajax({
+                //     url: "https://prudlelabs.atlassian.net/rest/api/2/issue/",
+                //     type: 'POST', 
+                //     data : JSON.stringify(issue),
+                //     dataType: "json", 
+                //     contentType: "application/json",
+                //     // beforeSend: function (xhr) {
+                //     //     xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
+                //     // },
+                //     success: function(data) {
+                //         // alert("issue : "+data.key+" created");
+                //         issueKeyid = data.key;
+
+                //         $.ajax({
+                //             url: "https://prudlelabs.atlassian.net/rest/api/2/issue/"+issueKeyid+"/attachments",
+                //             type: 'POST', 
+                //             data: {file: dataURL},
+                //             processData: false,
+                //             contentType: 'multipart/form-data',
+                //             beforeSend: function (xhr) {
+                //                 xhr.setRequestHeader ("X-Atlassian-Token:no-check");
+                //             },
+                //             success: function(data) {
+                //                 alert("issue created");
+                                
+                //             },
+                //             error:function(data){
+                //                 console.log(data);
+                //             },
+                //             complete:function(xhr,status){
+                //                 console.log(xhr);
+                //             }
+                //         });
+                //     }
+                // });
             });
         // chrome.tabs.captureVisibleTab(function(b) {
         //     var c = chrome.extension.getURL("bugreport.html");
@@ -168,6 +219,61 @@ var NP = {
         }
 
         return new Blob([ia], {type:mimeString});
+    },
+
+    createIssue: function (issueData){
+        console.log(issueData);
+        $.ajax({
+                url: "https://prudlelabs.atlassian.net/rest/api/2/issue/",
+                type: 'POST', 
+                data : JSON.stringify(issueData),
+                dataType: "json", 
+                contentType: "application/json",
+                xhrFields: {
+                    withCredentials: true
+                },
+                beforeSend: function(xhr){
+                    xhr.setRequestHeader("X-Atlassian-Token:nocheck");
+                },
+                success: function(data) {
+                    console.log(data);
+                   
+                },
+                error : function (xhr,data){
+                    console.log(xhr);
+                }
+         });
+        // $.ajax({
+        //     url: "https://prudlelabs.atlassian.net/rest/api/2/issue/",
+        //     type: 'POST', 
+        //     data : JSON.stringify(issue),
+        //     dataType: "json", 
+        //     contentType: "application/json",
+        //     success: function(data) {
+        //         issueKeyid = data.key;
+
+        //         $.ajax({
+        //             url: "https://prudlelabs.atlassian.net/rest/api/2/issue/"+issueKeyid+"/attachments",
+        //             type: 'POST', 
+        //             data: {file: dataURL},
+        //             processData: false,
+        //             contentType: 'multipart/form-data',
+        //             beforeSend: function (xhr) {
+        //                 xhr.setRequestHeader ("X-Atlassian-Token:no-check");
+        //             },
+        //             success: function(data) {
+        //                 alert("issue created");
+                        
+        //             },
+        //             error:function(data){
+        //                 console.log(data);
+        //             },
+        //             complete:function(xhr,status){
+        //                 console.log(xhr);
+        //             }
+        //         });
+        //     }
+        // });
     }
 
 };

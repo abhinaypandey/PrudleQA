@@ -8,17 +8,13 @@
 		
 		<title>PrudleQA</title>
 		
-		<!-- Scripts -->
-		<script src="js/lib/jquery.js"></script>
-		<script src="js/lib/bootstrap.min.js"></script>
-		
 		<!-- Cascading Style Sheets -->
 		<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">		
 	</head>
 	
 	<body>
 	
-		<div class="container" style="width:300px;padding:20px;">
+		<div class="container" style="width:300px;height:60px;">
             <div class="row">
                 <div class="col-md-4">
                     <form id="login-form">
@@ -37,25 +33,46 @@
                     </form>
                     <span id="status-display"></span>
                 </div>
-                <div class="row" >
+                <div class="row" style="position:fixed; height: 50px;margin-bottom:20px;padding:5px;" >
                      <div class="col-xs-4" >
-                            <button type="submit" class="btn btn-primary btn-sm" id="tools-btn" style="display: none">Load tools</button>
+                            <button class="btn btn-primary btn-sm" id="tools-btn" style="display: none">Load tools</button>
                     </div>
                      <div class="col-xs-4">
                         <form id="logout-form" style="display: none">
                              <button type="submit" class="btn btn-primary btn-sm " id="jira-logout-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Logging out">Log out</button>
                         </form>
                     </div>
+                    <div class="col-xs-4" >
+                            <button class="btn btn-primary btn-sm" id="issues-btn" style="display: none">View issues</button>
+                    </div>
                     
                 </div>
                
 
             </div>
+            <div class='row'>
+                    <table id="issues-table" class="table" style="display:none;margin-top:50px;">
+                        <thead>
+                        <tr><th><p class="form-signin-heading">List of recently reported issues </h2></p></tr>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                            <tr id='r0'></tr>
+                        </tbody>
+                    </table>
+                
+
+            </div>
 
         </div>
-		
+	
+    <!-- Scripts -->
+    <script src="js/lib/jquery.js"></script>
+    <script src="js/lib/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/popup.js"></script>
-    <script type="text/javascript" ></script>
 </body>
     
 </html>

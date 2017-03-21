@@ -244,6 +244,7 @@ var getCSSAnimationManager = function() {
         paragraph: null,
         panel: null,
         hidable_control:null,
+        isHidden: false,
         createCanvas: function() {
             this.canvas = a.document.createElement("canvas"), this.context = this.canvas.getContext("2d"), this.canvas.setAttribute("id", "NOTEPAD"), this.buffer = document.createElement("canvas"), a.document.body.appendChild(this.canvas), a.addEventListener("resize", this.resizeBinded), a.addEventListener("scroll", this.resizeBinded), this.handleResize(), this.storeHistory()
         },
@@ -300,6 +301,7 @@ var getCSSAnimationManager = function() {
             var k = a.document.createElement("div"),
                 l = a.document.createElement("div");
                 m = a.document.createElement("div");
+                o = a.document.createElement('span');
 
             // k.setAttribute("class", "NOTEPAD_controls_control_option prtBtn"),
             // k.setAttribute("title", "Take a screenshot of the current web page with your drawings"), 
@@ -307,6 +309,10 @@ var getCSSAnimationManager = function() {
             k.setAttribute("title", "Bug report"), 
             l.setAttribute("class", "NOTEPAD_controls_control_option exitBtn"), 
             l.setAttribute("title", "Clean up your drawings and disable the tools"), 
+            o.setAttribute("id","collapseBtn");
+            o.setAttribute("title","Hide control menu");
+            o.innerHTML = '-';
+
             
             this.backBtn.setAttribute("class", "NOTEPAD_controls_control_option backBtn"), 
             this.backBtn.setAttribute("title", "Step backward"), 
@@ -314,13 +320,15 @@ var getCSSAnimationManager = function() {
             this.nextBtn.setAttribute("title", "Step forward"), 
             k.addEventListener("click", Function.prototype.bind.call(this.onBugButtonClick, this)), 
             l.addEventListener("click", Function.prototype.bind.call(this.exit, this)), 
+            o.addEventListener("click", Function.prototype.bind.call(this.toggleCollapse, this)), 
             // m.addEventListener("click", Function.prototype.bind.call(this.onBugButtonClick, this)),
             this.backBtn.addEventListener("click", Function.prototype.bind.call(this.handleBackButtonClick, this)), 
             this.nextBtn.addEventListener("click", Function.prototype.bind.call(this.handleForwardButtonClick, this)), 
             d.appendChild(this.backBtn), 
             d.appendChild(this.nextBtn),
-            d.appendChild(l), 
-            d.appendChild(k) 
+            d.appendChild(k), 
+            d.appendChild(l),
+            this.panel.appendChild(o);
              
 
            
@@ -374,6 +382,18 @@ var getCSSAnimationManager = function() {
             }, 100), a.setTimeout(Function.prototype.bind.call(function() {
                 this.removeClass(this.panel, "hide")
             }, this), 500)
+        },
+        toggleCollapse: function() {
+            if(!this.isHidden){
+                document.getElementById('NOTEPAD_HIDABLE_DIV').style.display = 'none';
+                document.getElementById('collapseBtn').innerHTML = '+';
+                this.isHidden = true;
+            }else if(this.isHidden){
+                document.getElementById('NOTEPAD_HIDABLE_DIV').style.display = 'block';
+                document.getElementById('collapseBtn').innerHTML = '-';
+                this.isHidden = false;
+            }
+           
         },
         onControlPanelClick: function(b, c) {
             if (this.selectedDrawOption !== b) {
@@ -568,9 +588,9 @@ var getCSSAnimationManager = function() {
             var c;
             document.createEvent ? (c = document.createEvent("HTMLEvents"), c.initEvent(b, !0, !0)) : document.createEventObject && (c = document.createEventObject(), c.eventType = b), c.eventName = b, a.dispatchEvent ? a.dispatchEvent(c) : a.fireEvent && htmlEvents["on" + b] ? a.fireEvent("on" + c.eventType, c) : a[b] ? a[b]() : a["on" + b] && a["on" + b]()
         },
-        initDragging: function() {
-            this.panel.addEventListener("mousedown", this.handleDraggingStart), this.panel.addEventListener("touchstart", this.handleDraggingStart), a.document.addEventListener("mouseup", this.handleDragDone), a.document.addEventListener("touchend", this.handleDragDone);
-        },
+        // initDragging: function() {
+        //     this.panel.addEventListener("mousedown", this.handleDraggingStart), this.panel.addEventListener("touchstart", this.handleDraggingStart), a.document.addEventListener("mouseup", this.handleDragDone), a.document.addEventListener("touchend", this.handleDragDone);
+        // },
         handleDraggingStart: function(a) {
             c.pos_x = this.getBoundingClientRect().left - ("undefined" == typeof a.clientX ? a.touches[0].clientX : a.clientX), c.pos_y = this.getBoundingClientRect().top - ("undefined" == typeof a.clientY ? a.touches[0].clientY : a.clientY), this.addEventListener("mousemove", c.handleDragging), this.addEventListener("touchmove", c.handleDragging)
         },
@@ -609,7 +629,7 @@ var getCSSAnimationManager = function() {
         },
         render: function(a) {
             this.config = a || {}, this.createCanvas(), this.setLineProperty(), this.createControlPanel(), 
-            this.initDragging(), 
+            // this.initDragging(), 
             this.addMouseEventListener()
         },
         initConfig: function() {
@@ -625,5 +645,6 @@ var getCSSAnimationManager = function() {
             }, this), this.initMessageHandler(), this.initConfig(), this.initialized = !0, "undefined" != typeof unsafeWindow && null !== unsafeWindow && (unsafeWindow.NOTEPAD_INIT = !0)
         }
     };
+
     return c
 });
