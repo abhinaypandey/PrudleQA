@@ -99,8 +99,6 @@ function logout(){
                     
                 },
                 complete:function(xhr,status){
-
-                    console.log(xhr);
                     chrome.storage.local.clear(function() {
                         statusDisplay.innerHTML = "logged out";
                         statusDisplay.style.color = "green";
@@ -108,6 +106,8 @@ function logout(){
                         document.getElementById('login-form').style.display = "block";
                         document.getElementById('tools-btn').style.display = "none";
                         document.getElementById('issues-btn').style.display = "none";
+                        document.getElementById('project-drop-issues').style.display = "none";
+                        document.getElementById('issues-table').style.display = "none"; 
                     });
                     $('#jira-logout-btn').button('reset');
                 }
@@ -129,9 +129,11 @@ function loadIssues(){
         session= items;
         if(items.name && items.value && items.jiraUrl){
 
+            var projectKey = $('#project-drop-issues').val();
+
              // The URL to POST our data to
-            var issuesUrl = 'https://'+items.jiraUrl+'/rest/api/2/search?jql=project="PRUD"';
-            var issueHyperlink = 'https://prudlelabs.atlassian.net/projects/PRUD/issues/'; 
+            var issuesUrl = 'https://'+items.jiraUrl+'/rest/api/2/search?jql=project="'+projectKey+'"';
+            var issueHyperlink = 'https://'+items.jiraUrl+'/projects/'+projectKey+'/issues/'; 
     
             $.ajax({
                 url: issuesUrl,
@@ -182,6 +184,9 @@ function saveSession(responseData){
         document.getElementById('login-form').style.display = "none";
         document.getElementById('tools-btn').style.display = "block";
         document.getElementById('issues-btn').style.display = "block";
+        document.getElementById('project-drop-issues').style.display = "block";
+        loadProjectList(session.jiraUrl);
+
     });
     
 }
@@ -196,6 +201,8 @@ function getSession(){
             document.getElementById('login-form').style.display = "none";
             document.getElementById('tools-btn').style.display = "block";
             document.getElementById('issues-btn').style.display = "block";
+            document.getElementById('project-drop-issues').style.display = "block";
+            loadProjectList(items.jiraUrl);
 
         }
        
@@ -209,12 +216,30 @@ function loadTools(){
     chrome.storage.local.get(null, function(items) {
         if(items.name && items.value && items.jiraUrl){
             chrome.runtime.getBackgroundPage(function (backgroundPage) {
-                backgroundPage.NP.inject();
+                // clear out saved screeshot 
+                chrome.storage.local.set({'screenshotImg': ''}, function() {
+                     backgroundPage.BG.inject();
+                });
+               
                    
             });
         }
     });
    
+}
+
+function loadProjectList(jiraUrl){
+     $.ajax({
+            url: "https://"+jiraUrl+"/rest/api/2/project",
+            type: 'GET',
+            success: function(data) {
+                $('#project-drop-issues').html('');
+                $('<option value="">Select Project</option>').appendTo('#project-drop-issues');
+                $.each(data,function(i){
+                    $('<option value="'+data[i].key+'">'+data[i].key+'</option>').appendTo('#project-drop-issues');
+                });
+            }
+        });
 }
 
 // When the popup HTML has loaded

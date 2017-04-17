@@ -9,8 +9,7 @@
     },
     // "content_scripts" : [{
     //     "matches": ["<all_urls>"],
-    //     "js" : ["js/lib/jquery.js","images/*.png","js/lib/bootstrap.min.js","js/popup.js","js/modal.js"],
-    //     "css" :["css/bootstrap.min.css"],
+    //     "js" : ["js/content_script.js"],
     //     "run_at": "document_end"
     // }],
     "browser_action": {
@@ -25,5 +24,8 @@
     },
     "permissions": ["tabs", "activeTab", "<all_urls>","storage"],
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-    "web_accessible_resources": ["images/*.png","js/lib/bootstrap.min.js","js/popup.js","js/modal.js"]
+    "web_accessible_resources": ["images/*.png","js/lib/bootstrap.min.js","js/popup.js","js/modal.js"],
+    "externally_connectable": {
+        "matches": []
+    }
 }

@@ -3,7 +3,7 @@
 <html>
 	<head>
 	    <meta charset="utf-8">
-		<meta name="description" content="Prudle QA">
+		<meta name="description" content="Prudle Quality Assurance">
 		<meta name="author" content="Abhinay">
 		
 		<title>PrudleQA</title>
@@ -14,7 +14,7 @@
 	
 	<body>
 	
-		<div class="container" style="width:300px;height:60px;">
+		<div class="container" style="width:300px;height:120px;">
             <div class="row">
                 <div class="col-md-4">
                     <form id="login-form">
@@ -33,7 +33,7 @@
                     </form>
                     <span id="status-display"></span>
                 </div>
-                <div class="row" style="position:fixed; height: 50px;margin-bottom:20px;padding:5px;" >
+                <div class="row" style="position:relative; height: 50px;margin-bottom:10px;padding:5px;" >
                      <div class="col-xs-4" >
                             <button class="btn btn-primary btn-sm" id="tools-btn" style="display: none">Load tools</button>
                     </div>
@@ -42,10 +42,17 @@
                              <button type="submit" class="btn btn-primary btn-sm " id="jira-logout-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Logging out">Log out</button>
                         </form>
                     </div>
-                    <div class="col-xs-4" >
-                            <button class="btn btn-primary btn-sm" id="issues-btn" style="display: none">View issues</button>
-                    </div>
                     
+                </div>
+                <div class="row">
+                    <div class="col-md-4" >
+                        <div class="form-group">
+                            <select class="form-control" id="project-drop-issues" style="display: none">
+                            </select>
+                        </div>
+                         <button class="btn btn-primary btn-sm" id="issues-btn" style="display: none">View issues</button>
+                            
+                    </div>
                 </div>
                
 

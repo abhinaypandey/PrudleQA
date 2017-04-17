@@ -1,16 +1,16 @@
-var NP = {
+
+var BG = {
     init: function() {
          chrome.runtime.onMessage.addListener(function(a, b, c) {
-            if ("take_screen_shot" === a.method) NP.screenShot(c);
-            else if ("createIssue" === a.method) NP.createIssue(b);
+            if ("openJiraModal" === a.method){ BG.openJiraModal(c)}
+            else if ("takeScreenShotAndSave" === a.method){ BG.takeScreenShotAndSave()}
+            else if ("createIssue" === a.method){ BG.createIssue(a.issueData); }
             else if ("get_pixel_color" === a.method) {
                 var d = a.point;
-                NP.getPixelColor(d, c)
-            } else "save_data" === a.method ? NP.saveData(a.config) : "get_data" === a.method && NP.getData(c);
+                BG.getPixelColor(d, c)
+            } else "save_data" === a.method ? BG.saveData(a.config) : "get_data" === a.method && BG.getData(c);
             return !0
-        });
-
-        
+        });   
     },
     getPixelColor: function(a, b) {
         chrome.tabs.captureVisibleTab(null, null, function(c) {
@@ -59,6 +59,13 @@ var NP = {
             chrome.tabs.executeScript(null, {
                 file: "js/inject.js"
             })
+
+            // chrome.tabs.executeScript(null, {
+            //     file: "js/screenshot/api.js"
+            // });
+            // chrome.tabs.executeScript(null, {
+            //     file: "js/screenshot/page.js"
+            // });
         });
     },
 
@@ -77,13 +84,14 @@ var NP = {
             chrome.tabs.executeScript(null, {
                 file: "js/lib/bootstrap.min.js"
             });
+            
         });
     },
 
     authorize: function (){
 
     },
-    screenShot: function(a) {
+    openJiraModal: function(a) {
 
             chrome.tabs.insertCSS(null, {
             file: "css/bootstrap.min.css",
@@ -107,12 +115,15 @@ var NP = {
                 chrome.tabs.executeScript(null, {
                     file: "js/modal.js"
                 });
+
+               
+                // chrome.tabs.executeScript(null, {
+                //     file: "js/screenshot/capture.js"
+                // });
+
             });
 
-            chrome.runtime.sendMessage({
-                    method: "exit_toolbar"
-            });
-
+            
             // $.ajax({
             //     url: "https://prudlelabs.atlassian.net/rest/api/2/project",
             //     type: 'GET',
@@ -185,11 +196,27 @@ var NP = {
         //     }, function(d) {
         //         d.length ? chrome.tabs.update(d[0].id, {
         //             active: !0
-        //         }, Function.prototype.bind.call(NP.updateScreenshot, NP, b, a, 0)) : chrome.tabs.create({
+        //         }, Function.prototype.bind.call(BG.updateScreenshot, BG, b, a, 0)) : chrome.tabs.create({
         //             url: c
-        //         }, Function.prototype.bind.call(NP.updateScreenshot, NP, b, a, 0))
+        //         }, Function.prototype.bind.call(BG.updateScreenshot, BG, b, a, 0))
         //     })
         // })
+    },
+
+    takeScreenShotAndSave : function (){
+        chrome.tabs.captureVisibleTab(function(b) {
+            var c = chrome.extension.getURL("screenshot.html");
+            chrome.tabs.query({
+                url: c
+            }, function(d) {
+                d.length ? chrome.tabs.update(d[0].id, {
+                    active: !0
+                }, Function.prototype.bind.call(BG.updateScreenshot, BG, b, a, 0)) : chrome.tabs.create({
+                    url: c
+                }, Function.prototype.bind.call(BG.updateScreenshot, BG, b, a, 0))
+            })
+        })
+       
     },
     updateScreenshot: function(a, b) {
         var c = arguments[2];
@@ -197,7 +224,7 @@ var NP = {
             method: "update_url",
             url: a
         }, function(d) {
-            d && d.success || window.setTimeout(Function.prototype.bind.call(NP.updateScreenshot, NP, a, b, ++c), 300)
+            d && d.success || window.setTimeout(Function.prototype.bind.call(BG.updateScreenshot, BG, a, b, ++c), 300)
         })
     },
 
@@ -222,26 +249,61 @@ var NP = {
     },
 
     createIssue: function (issueData){
-        console.log(issueData);
-        $.ajax({
-                url: "https://prudlelabs.atlassian.net/rest/api/2/issue/",
-                type: 'POST', 
-                data : JSON.stringify(issueData),
-                dataType: "json", 
-                contentType: "application/json",
-                xhrFields: {
-                    withCredentials: true
-                },
-                beforeSend: function(xhr){
-                    xhr.setRequestHeader("X-Atlassian-Token:nocheck");
-                },
-                success: function(data) {
-                    console.log(data);
-                   
-                },
-                error : function (xhr,data){
-                    console.log(xhr);
-                }
+         var status;
+         chrome.storage.local.get(null, function(items) {
+            if(items.name && items.value && items.jiraUrl){
+                console.log(issueData);
+                var jiraUrl = items.jiraUrl;
+                $.ajax({
+                    url: "https://"+jiraUrl+"/rest/api/2/issue/",
+                    type: 'POST', 
+                    data : JSON.stringify(issueData),
+                    dataType: "json", 
+                    xhrFields: {
+                            withCredentials: true
+                    },
+                    contentType: "application/json",
+                    success: function(data) {
+                        
+                        issueKeyid = data.key;
+
+                        chrome.storage.local.get('screenshotImg', function(items) {
+                            if(items.screenshotImg && items.screenshotImg!==''){
+
+                            var blob = BG.dataURItoBlob(items.screenshotImg);
+                            var fd = new FormData();
+                            fd.append("file", blob,"screenshot_"+issueKeyid+"_.png");
+                            fd.append('comment', "screenshot");
+                            fd.append('minorEdit', "true");
+
+                            $.ajax({
+                                url: "https://"+jiraUrl+"/rest/api/2/issue/"+issueKeyid+"/attachments",
+                                type: 'POST', 
+                                data: fd,
+                                processData: false,
+                                contentType: false,
+                                headers: {
+                                    "X-Atlassian-Token": "nocheck"
+                                },
+                                success: function(data) {
+                                    status = "success";
+                                    alert("issue created with screenshot");
+                                    
+                                },
+                                error:function(data){
+                                    status = "failed";
+                                    alert("Something went wrong !!");
+                                }
+                            });
+            
+                            }
+                        });
+                        
+                    }
+                });
+
+         }
+
          });
         // $.ajax({
         //     url: "https://prudlelabs.atlassian.net/rest/api/2/issue/",
@@ -274,7 +336,9 @@ var NP = {
         //         });
         //     }
         // });
+
+        return status;
     }
 
 };
-NP.init();
+BG.init();

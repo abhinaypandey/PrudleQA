@@ -1,5 +1,4 @@
 
-window.CaptureScreenAPI = (function() {
 
 var currentTab, // result of chrome.tabs.query of current active tab
     resultWindowId; // window id for putting resulting images
@@ -104,7 +103,6 @@ function splitnotifier() {
 // start doing stuff immediately! - including error cases
 //
 
-function captureScreenShot(){
     chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
     var tab = tabs[0];
     currentTab = tab; // used in later calls to get tab info
@@ -114,6 +112,3 @@ function captureScreenShot(){
     CaptureAPI.captureToFiles(tab, filename, displayCaptures,
                               errorHandler, progress, splitnotifier);
     });
-}
-
-})();

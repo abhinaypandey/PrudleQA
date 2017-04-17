@@ -302,6 +302,8 @@ var getCSSAnimationManager = function() {
                 l = a.document.createElement("div");
                 m = a.document.createElement("div");
                 o = a.document.createElement('span');
+                p = a.document.createElement("div");
+        
 
             // k.setAttribute("class", "NOTEPAD_controls_control_option prtBtn"),
             // k.setAttribute("title", "Take a screenshot of the current web page with your drawings"), 
@@ -312,6 +314,8 @@ var getCSSAnimationManager = function() {
             o.setAttribute("id","collapseBtn");
             o.setAttribute("title","Hide control menu");
             o.innerHTML = '-';
+            p.setAttribute("class", "NOTEPAD_controls_control_option prtBtn"), 
+            p.setAttribute("title", "Take a screenshot of the current web page with your drawings and save"),
 
             
             this.backBtn.setAttribute("class", "NOTEPAD_controls_control_option backBtn"), 
@@ -321,6 +325,7 @@ var getCSSAnimationManager = function() {
             k.addEventListener("click", Function.prototype.bind.call(this.onBugButtonClick, this)), 
             l.addEventListener("click", Function.prototype.bind.call(this.exit, this)), 
             o.addEventListener("click", Function.prototype.bind.call(this.toggleCollapse, this)), 
+            p.addEventListener("click", Function.prototype.bind.call(this.onPrintButtonClick, this)),
             // m.addEventListener("click", Function.prototype.bind.call(this.onBugButtonClick, this)),
             this.backBtn.addEventListener("click", Function.prototype.bind.call(this.handleBackButtonClick, this)), 
             this.nextBtn.addEventListener("click", Function.prototype.bind.call(this.handleForwardButtonClick, this)), 
@@ -328,6 +333,7 @@ var getCSSAnimationManager = function() {
             d.appendChild(this.nextBtn),
             d.appendChild(k), 
             d.appendChild(l),
+            //d.appendChild(p),
             this.panel.appendChild(o);
              
 
@@ -361,27 +367,32 @@ var getCSSAnimationManager = function() {
                 point: b
             }, a.location.origin)
         },
-        // onPrintButtonClick: function() {
-        //     this.addClass(this.panel, "hide"), a.setTimeout(function() {
-        //         "undefined" != typeof chrome ? chrome.runtime.sendMessage({
-        //             method: "take_screen_shot"
-        //         }) : "undefined" != typeof self && null !== self && self.port ? self.port.emit("take_screen_shot") : a.postMessage({
-        //             method: "take_screen_shot"
-        //         }, a.location.origin)
-        //     }, 100), a.setTimeout(Function.prototype.bind.call(function() {
-        //         this.removeClass(this.panel, "hide")
-        //     }, this), 500)
-        // },
-        onBugButtonClick: function() {
+        onPrintButtonClick: function() {
             this.addClass(this.panel, "hide"), a.setTimeout(function() {
                 "undefined" != typeof chrome ? chrome.runtime.sendMessage({
-                    method: "take_screen_shot"
-                }) : "undefined" != typeof self && null !== self && self.port ? self.port.emit("take_screen_shot") : a.postMessage({
-                    method: "take_screen_shot"
+                    method: "takeScreenShotAndSave"
+                }) : "undefined" != typeof self && null !== self && self.port ? self.port.emit("takeScreenShotAndSave") : a.postMessage({
+                    method: "takeScreenShotAndSave"
                 }, a.location.origin)
             }, 100), a.setTimeout(Function.prototype.bind.call(function() {
                 this.removeClass(this.panel, "hide")
             }, this), 500)
+        },
+        onBugButtonClick: function() {
+            this.addClass(this.panel, "hide"), a.setTimeout(function() {
+                "undefined" != typeof chrome ? chrome.runtime.sendMessage({
+                    method: "openJiraModal"
+                }) : "undefined" != typeof self && null !== self && self.port ? self.port.emit("openJiraModal") : a.postMessage({
+                    method: "openJiraModal"
+                }, a.location.origin)
+            }, 100), a.setTimeout(Function.prototype.bind.call(function() {
+                this.removeClass(this.panel, "hide");
+                this.canvas.parentNode.removeChild(this.canvas), this.panel.parentNode.removeChild(this.panel), a.document.removeEventListener("keydown", this.keydownBinded), a.document.removeEventListener("keypress", this.keypressBinded), a.document.removeEventListener("mouseup", this.handleDragDone), a.removeEventListener("resize", this.resizeBinded), a.removeEventListener("scroll", this.resizeBinded), this.canvas = null, this.context = null, this.selectedDrawOption = null, this.selectedColorOption = null, this.selectedAlphaOption = null, this.mousedown = !1, this.lastMouseDownLoc = null, this.drawingSurfaceImageData = null, this.paragraph = null, this.panel = null, this.initialized = !1, "undefined" != typeof self && null !== self && self.port ? (self.port.removeListener("get_pixel_color_response", this.setColorBinded), self.port.removeListener("get_data_response", this.renderBinded)) : "undefined" == typeof chrome && a.removeEventListener("message", this.handlePostMessageResponseBinded), "undefined" != typeof unsafeWindow && null !== unsafeWindow && (unsafeWindow.NOTEPAD_INIT = !1)
+        
+            }, this), 500)
+            
+            // a.setTimeout(function() {this.exit()},2000);
+
         },
         toggleCollapse: function() {
             if(!this.isHidden){

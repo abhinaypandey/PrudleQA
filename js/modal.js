@@ -1,30 +1,37 @@
 
 $(document).ready(function () {
-  $.ajax({
-        url: "https://prudlelabs.atlassian.net/rest/api/2/project",
-        type: 'GET',
-        success: function(data) {
-            $('#project-drop').html('');
-            $('<option value="">Select Project</option>').appendTo('#project-drop');
-            $.each(data,function(i){
-                $('<option value="'+data[i].key+'">'+data[i].key+'</option>').appendTo('#project-drop');
+
+  chrome.storage.local.get(null, function(items) {
+        if(items.name && items.value && items.jiraUrl){
+             $.ajax({
+                url: "https://"+items.jiraUrl+"/rest/api/2/project",
+                type: 'GET',
+                success: function(data) {
+                    $('#project-drop').html('');
+                    $('<option value="">Select Project</option>').appendTo('#project-drop');
+                    $.each(data,function(i){
+                        $('<option value="'+data[i].id+'">'+data[i].key+'</option>').appendTo('#project-drop');
+                    });
+                }
+            });
+
+            $.ajax({
+                url: "https://"+items.jiraUrl+"/rest/api/2/issuetype",
+                type: 'GET',
+                success: function(data) {
+                    $('#issue-drop').html('');
+                    $('<option value="">Select issue type</option>').appendTo('#issue-drop');
+                    $.each(data,function(i){
+                        $('<option value="'+data[i].id+'">'+data[i].name+'</option>').appendTo('#issue-drop');
+                    });
+                }
             });
         }
+       
     });
+ 
 
-    $.ajax({
-        url: "https://prudlelabs.atlassian.net/rest/api/2/issuetype",
-        type: 'GET',
-        success: function(data) {
-            $('#issue-drop').html('');
-            $('<option value="">Select issue type</option>').appendTo('#issue-drop');
-            $.each(data,function(i){
-                $('<option value="'+data[i].name+'">'+data[i].name+'</option>').appendTo('#issue-drop');
-            });
-        }
-    });
-
-    var jiraModal = $('<div class="modal fade" id="jiraModal" role="dialog"></div>')
+    var jiraModal = $('<div class="modal fade" id="jiraModal" role="dialog" style="z-index:100000;"></div>')
         .html('<div class="modal-dialog modal-lg">'+
             '<div class="modal-content">'+
                 '<div class="modal-header">'+
@@ -32,18 +39,18 @@ $(document).ready(function () {
                     '<h4 class="modal-title">Create Issue</h4>'+
                 '</div>'+
                 '<div class="modal-body">'+
-                    '<form id="jira-form">'+
+                    '<form id="jira-form" data-toggle="validator">'+
                         '<div class="form-group">'+
-                            '<select class="form-control" id="project-drop">'+
+                            '<select class="form-control" id="project-drop" required data-error="Please select project">'+
                             '</select>'+
                         '</div>'+
                         '<div class="form-group">'+
-                            '<select class="form-control" id="issue-drop">'+
+                            '<select class="form-control" id="issue-drop" required data-error="Please select issue type">'+
                             '</select>'+
                         '</div>'+
                         '<div class="form-group">'+
                             '<label for="issue-summary">Summary</label>'+
-                            '<textarea class="form-control" rows="3" id="issue-summary"></textarea>'+
+                            '<textarea class="form-control" rows="3" id="issue-summary" ></textarea>'+
                         '</div>'+
                         '<div class="form-group">'+
                             '<label for="issue-descr">Description</label>'+
@@ -57,51 +64,87 @@ $(document).ready(function () {
                 '</div>'+
                 '<div class="modal-footer">'+
                     '<button type="button" class="btn btn-primary btn-lg" id="create-issue-btn" data-loading-text="Reporting issue. Have patience ....">Create Issue</button>'+
-                    '<button type="button" class="btn btn-primary btn-lg" data-dismiss="modal">Close</button>'+
+                    '<button type="button" class="btn btn-primary btn-lg" class="modal-close-btn" data-dismiss="modal">Close</button>'+
                 '</div>'+
             '</div>'+
         '</div>');
 
-    if($('#jiraModal').length){
-        $('#jiraModal').remove();
-        $(jiraModal).appendTo('body');
-        $("#jiraModal").modal({backdrop: true});  
-    }
+    $(jiraModal).appendTo('body');
+    $("#jiraModal").modal();
     
     chrome.storage.local.get('screenshotImg', function(items) {
-        // Notify that we saved.
-        if(items.screenshotImg){
+        if(items.screenshotImg && items.screenshotImg!==''){
             document.getElementById('img-bug-screenshot').src = items.screenshotImg;
         }
     });
 
+    // if(!$('#jiraModal').length){
+    //     $(jiraModal).appendTo('body');
+    //     $("#jiraModal").modal();
+        
+    //     chrome.storage.local.get('screenshotImg', function(items) {
+    //         if(items.screenshotImg && items.screenshotImg!==''){
+    //             document.getElementById('img-bug-screenshot').src = items.screenshotImg;
+    //         }
+    //     });  
+    // }else{
+    //     $(jiraModal).appendTo('body');
+    //     $("#jiraModal").modal();
+        
+    //     chrome.storage.local.get('screenshotImg', function(items) {
+    //         if(items.screenshotImg && items.screenshotImg!==''){
+    //             document.getElementById('img-bug-screenshot').src = items.screenshotImg;
+    //         }
+    //     }); 
+    // }
+    
+
     $('#create-issue-btn').on('click',function(){
-        var issueType = $('#issue-drop').val();
-        var projectKey = $('#project-drop').val();
+        var issueTypeId = $('#issue-drop').val();
+        var issueTypeName = $('#issue-drop option:selected').text();
+        var projectId = $('#project-drop').val();
+        var projectKey = $('#project-drop option:selected').text();
         var summary = $('#issue-summary').val();
         var descr = $('#issue-descr').val();
+        var img = $('#img-bug-screenshot').val();
         
+        // var formData = new FormData();
+        // formData.append('issueType', issueType);
+        // formData.append('projectKey',projectKey);
+        // formData.append('summary',summary);
+        // formData.append('descr',descr);
+        // formData.append('file',img);
+
         var issue ={
                         "fields": {
                             "project":
                             { 
+                                "id": projectId,
                                 "key": projectKey
                             },
                             "summary": summary,
                             "description": descr,
                             "issuetype": {
-                                "name": issueType
+                                "id": issueTypeId,
+                                "name": issueTypeName
                             }       
                         }
                     };
 
+        // console.log(issue);
 
-        chrome.runtime.sendMessage({
-            name: "createIssue",
-            issue
-        }, function(response) {
-            console.log(response);
-        }); 
+        if(issueTypeId!=='' && projectId!=='' && summary!=='' && descr!==''){
+            chrome.runtime.sendMessage({
+                method: "createIssue",
+                issueData : issue
+            }, function(response) {
+                console.log("res:"+response);
+            }); 
+        }else{
+             alert("Please fill all the fields !!");
+        }
+        
+
 
 
     });
