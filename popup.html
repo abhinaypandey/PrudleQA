@@ -14,7 +14,7 @@
 	
 	<body>
 	
-		<div class="container" style="width:300px;height:120px;">
+		<div class="container" style="width:300px;height:100px;">
             <div class="row">
                 <div class="col-md-4">
                     <form id="login-form">
@@ -29,30 +29,30 @@
                             <input type="password" class="form-control" id="password" name="password" placeholder="Password">
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-lg " id="jira-auth-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Signing In">Sign In</button>
+                        <button type="submit" class="btn btn-primary btn-sm " id="jira-auth-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Signing In">Sign In</button> 
+                        
                     </form>
-                    <span id="status-display"></span>
-                </div>
-                <div class="row" style="position:relative; height: 50px;margin-bottom:10px;padding:5px;" >
-                     <div class="col-xs-4" >
-                            <button class="btn btn-primary btn-sm" id="tools-btn" style="display: none">Load tools</button>
+                    <br/>
+                    <button class="btn btn-primary btn-sm" id="tools-btn">View Toolbar</button>
+                </div><br/>
+
+                <div class="col-md-4" >
+                    <div class="form-group">
+                        <select class="form-control" id="project-drop-issues" style="display: none">
+                        </select>
                     </div>
-                     <div class="col-xs-4">
-                        <form id="logout-form" style="display: none">
-                             <button type="submit" class="btn btn-primary btn-sm " id="jira-logout-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Logging out">Log out</button>
-                        </form>
-                    </div>
+                        <button class="btn btn-primary btn-sm" id="issues-btn" style="display: none">View issues</button>
+                        
+                </div><br/>
+
+                <div class="col-xs-4">
+                    <form id="logout-form" style="display: none">
+                            <button type="submit" class="btn btn-primary btn-sm " id="jira-logout-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Logging out">Log out</button>
+                    </form>
+                </div><br/>
                     
-                </div>
-                <div class="row">
-                    <div class="col-md-4" >
-                        <div class="form-group">
-                            <select class="form-control" id="project-drop-issues" style="display: none">
-                            </select>
-                        </div>
-                         <button class="btn btn-primary btn-sm" id="issues-btn" style="display: none">View issues</button>
-                            
-                    </div>
+                <div class="col-xs-4">
+                    <span id="status-display"></span>
                 </div>
                
 

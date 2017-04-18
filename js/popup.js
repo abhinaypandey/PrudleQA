@@ -45,8 +45,16 @@ function login() {
         },
         error:function(data){
             if(!data.session){
-                statusDisplay.innerHTML = 'Loggin Failed';
+                statusDisplay.innerHTML = 'Login Failed';
                 statusDisplay.style.color = "red";
+                var intvId = setInterval(function(){
+                    statusDisplay.style.display = "none";
+                    $('#login-form input').val('');
+                },3000);
+
+                setTimeout(function(){
+                    clearInterval(intvId);
+                },4000);
             }   
         },
         complete:function(xhr,status){
@@ -85,8 +93,7 @@ function logout(){
                             statusDisplay.innerHTML = data.responseJSON.errorMessages[0];
                             statusDisplay.style.color = "red";
                     }else if(data && data.status==204){
-                            statusDisplay.innerHTML = "logged out";
-                            statusDisplay.style.color = "green";
+                           
                     }
                     
                 },
@@ -100,11 +107,8 @@ function logout(){
                 },
                 complete:function(xhr,status){
                     chrome.storage.local.clear(function() {
-                        statusDisplay.innerHTML = "logged out";
-                        statusDisplay.style.color = "green";
                         document.getElementById('logout-form').style.display = "none";
                         document.getElementById('login-form').style.display = "block";
-                        document.getElementById('tools-btn').style.display = "none";
                         document.getElementById('issues-btn').style.display = "none";
                         document.getElementById('project-drop-issues').style.display = "none";
                         document.getElementById('issues-table').style.display = "none"; 
@@ -135,36 +139,42 @@ function loadIssues(){
             var issuesUrl = 'https://'+items.jiraUrl+'/rest/api/2/search?jql=project="'+projectKey+'"';
             var issueHyperlink = 'https://'+items.jiraUrl+'/projects/'+projectKey+'/issues/'; 
     
-            $.ajax({
-                url: issuesUrl,
-                type: 'GET', 
-                contentType: 'application/json',
-                xhrFields: {
-                    withCredentials: true
-                },
-                beforeSend: function(xhr){
-                    $('#issues-btn').button('loading');
-                },
-                success: function(data) {
-                    if(data){
-                        $.each(data.issues,function(i){
-                              var issue = data.issues[i];
-                              $('#r'+i).html("<td><a href="+issueHyperlink+issue.key+" target='_blank'>"+issue.id+"</td><td><a href="+issueHyperlink+issue.key+"target='_blank'>"+issue.key+"</td>");
-                              
-                              $('#issues-table').append('<tr id="r'+(i+1)+'"></tr>').show();
-                         });
+            if(projectKey!== ""){
+                 $.ajax({
+                    url: issuesUrl,
+                    type: 'GET', 
+                    contentType: 'application/json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    beforeSend: function(xhr){
+                        $('#issues-btn').button('loading');
+                    },
+                    success: function(data) {
+                        if(data){
+                            $.each(data.issues,function(i){
+                                var issue = data.issues[i];
+                                $('#r'+i).html("<td><a href="+issueHyperlink+issue.key+" target='_blank'>"+issue.id+"</td><td><a href="+issueHyperlink+issue.key+"target='_blank'>"+issue.key+"</td>");
+                                
+                                $('#issues-table').append('<tr id="r'+(i+1)+'"></tr>').show();
+                            });
+                        }
+                        
+                    },
+                    error:function(data){
+                        statusDisplay.innerHTML = data.responseJSON.errorMessages[0];
+                        statusDisplay.style.color = "red"; 
+                        setInterval(function(){
+                           statusDisplay.style.display = "none";
+                        },400);
+                        
+                    },
+                    complete:function(xhr,status){
+                        $('#issues-btn').button('reset');
                     }
-                    
-                },
-                error:function(data){
-                    statusDisplay.innerHTML = data.responseJSON.errorMessages[0];
-                    statusDisplay.style.color = "red"; 
-                    
-                },
-                complete:function(xhr,status){
-                    $('#issues-btn').button('reset');
-                }
-            });
+                });
+            }
+           
         }
        
     });
@@ -213,18 +223,20 @@ function getSession(){
 
 function loadTools(){
 
-    chrome.storage.local.get(null, function(items) {
-        if(items.name && items.value && items.jiraUrl){
-            chrome.runtime.getBackgroundPage(function (backgroundPage) {
-                // clear out saved screeshot 
-                chrome.storage.local.set({'screenshotImg': ''}, function() {
-                     backgroundPage.BG.inject();
-                });
-               
-                   
-            });
-        }
+    chrome.runtime.getBackgroundPage(function (backgroundPage) {
+        // clear out saved screeshot 
+        chrome.storage.local.set({'screenshotImg': ''}, function() {
+                backgroundPage.BG.inject();
+        });
+        
+            
     });
+
+    // chrome.storage.local.get(null, function(items) {
+    //     if(items.name && items.value && items.jiraUrl){
+            
+    //     }
+    // });
    
 }
 

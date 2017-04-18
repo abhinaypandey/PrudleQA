@@ -144,7 +144,7 @@
 }
 #NOTEPAD_controls {
   display: table;
-  width: 47%;
+  width: auto;
   max-height: 70px;
   align:center;
   font-family: arial, helvetica, sans-serif;
@@ -166,7 +166,7 @@
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
   border-top-left-radius: 8px;
-  border-bottom: 1px solid coral;
+  border-bottom: 1px solid blue;
   -moz-background-clip: padding-box;
   -webkit-background-clip: padding-box;
   background-clip: padding-box;
@@ -174,7 +174,6 @@
   -moz-box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
   box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
   padding: 5px;
-  margin: 0;
   margin-right:25%;
   font-size: initial;
   vertical-align: baseline;
@@ -209,7 +208,7 @@
 
 #NOTEPAD_controls .NOTEPAD_controls_draw {
   display: inline-block;
-  width: 220px;
+  width: auto;
   margin-left: 0px;
   border-width: 1px;
   border-style: solid;
@@ -229,6 +228,10 @@
   font-size: 10px;
   padding-bottom: 5px;
 }*/
+/*#NOTEPAD_controls #NOTEPAD_HIDABLE_DIV{
+
+}*/
+
 #NOTEPAD_controls .NOTEPAD_controls_draw .NOTEPAD_controls_draw_option {
   width: 30px;
   height: 30px;
@@ -444,7 +447,7 @@
   border-right: 0;
   border-top: 0;
   border-bottom: 0;
-  width: 200px;
+  width: auto;
 }
 /*#NOTEPAD_controls .NOTEPAD_controls_control:before {
   content: "Controls";
@@ -463,7 +466,7 @@
   padding-top:5px;
 }
 #NOTEPAD_controls .NOTEPAD_controls_control .NOTEPAD_controls_control_option.prtBtn {
-  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAAbFBMVEX///8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB8dl/BAAAAJHRSTlMAAQIDBBAZISs6PkBFR0hMUFhdX2JkamtudHqAiI2cnp+gpahCIZkXAAAAe0lEQVR4AW3M2Q6CMBBG4QOILKAsqGWRltH3f0dHIA2JfpdnMj//ZbXK8G6PqzL37WhFXnwFbxGb4UJUXJYxcAodgupc07gOnmdZQz6ixhzYgo1QkfVhYbX44AJU4HyoDMpUPjDMRTEPKNn/k7ZN9p2pvxz0E6T1QcqPD4yUCPMiktASAAAAAElFTkSuQmCC);
+  background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABHNCSVQICAgIfAhkiAAAAAlwSFlzAAAA/wAAAP8BnYVAGgAAABl0RVh0U29mdHdhcmUAd3d3Lmlua3NjYXBlLm9yZ5vuPBoAAAG7SURBVEiJtdaxS1ZhFAbw3xGVoEFcUmgIp3CpMIW2QihoDGppiGZrDPwXqiVaggIhGgpCaREiIeiDhgZFmhusoaGGtK2iPA3fa9jHd1/9iu+BM9zzPO9z7rn33Pe9kZn6iYG+umOwRkbENGYRDZLEy8xca/Jo7CAixrGEbXxviG0sFW13n513EBHHMbGLO4OfmXmjaXFZdwe/8HpXeiMz39Ju/Sge4hs+dKy/m5nrexSYwbWO9BEcwNXAfbQy83HNqJgNQGZu70N7GafhM4YyU7fQ7vI6WvhUolVy0aEdxk0cxFDxtlUxH8MrPMWU9tQN4gSeFG6sQ/8ex8r11l4FljFX4eewXOG3amN6qTyCe02awkXRdkXtSz6LhQq/g4Wi7bnASVRHtGC9aHsu8AWj+ygwWrQ9F1jFzD4KzBRtI7pOESbxDiOVKRkpmsmmKWosUATzWMF4F+4QXmC+NqbV7Rq38RVvImIRa9pb9BQu4hYe1AwCm5lZfZkRcRjnMF1Sq1jJzI97rNuERcw2tfmvoX1QLQZO4RGeY6N2Rz1gAudxJTJTRAzjgr8PnP/BBp5l5o8/J1q/0Pe/it9+p4Xs+jctfwAAAABJRU5ErkJggg==);
 }
 
 #NOTEPAD_controls .NOTEPAD_controls_control .NOTEPAD_controls_control_option.bugBtn {
@@ -492,7 +495,7 @@
   -webkit-border-bottom-left-radius: 10px;
   -webkit-border-top-left-radius: 10px;
   position: fixed;
-  left: 49%;
+  left: 52%;
   display: inline-block;
   cursor: pointer;
   background-repeat: no-repeat;
@@ -500,7 +503,7 @@
   text-align: center;
   line-height: 0.6;
   color:#ffffff;
-  background-color: coral
+  background-color: blue;
 }
 
 .collapse-arrow-up {
@@ -508,15 +511,15 @@
   height: 0; 
   border-left: 7px solid transparent;
   border-right: 7px solid transparent;
-  border-bottom: 7px solid coral;
+  border-bottom: 7px solid blue;
   -webkit-border-left: 7px solid transparent;
   -webkit-border-right: 7px solid transparent;
-  -webkit-border-bottom: 7px solid coral;
+  -webkit-border-bottom: 7px solid blue;
   left: 49%;
   cursor: pointer;
   background-repeat: no-repeat;
   color:#ffffff;
-  background-color: coral
+  background-color: blue;
 }
 
 .collapse-arrow-down {
@@ -524,13 +527,13 @@
   height: 0; 
   border-left: 5px solid transparent;
   border-right: 5px solid transparent;
-  border-top: 5px solid coral;
+  border-top: 5px solid blue;
   position: fixed;
   left: 49%;
   cursor: pointer;
   background-repeat: no-repeat;
   color:#ffffff;
-  background-color: coral
+  background-color: blue;
 }
 #NOTEPAD_controls .NOTEPAD_controls_control .NOTEPAD_controls_control_option.nextBtn.disabled {
   -moz-opacity: 0.3;

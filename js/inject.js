@@ -331,11 +331,21 @@ var getCSSAnimationManager = function() {
             this.nextBtn.addEventListener("click", Function.prototype.bind.call(this.handleForwardButtonClick, this)), 
             d.appendChild(this.backBtn), 
             d.appendChild(this.nextBtn),
-            d.appendChild(k), 
-            d.appendChild(l),
-            //d.appendChild(p),
-            this.panel.appendChild(o);
-             
+
+            // show bug report button only when user is logged in 
+            chrome.storage.local.get(null, function(items) {
+                if(items.name && items.value && items.jiraUrl){
+                    d.appendChild(k);
+                    d.appendChild(p);
+                    d.appendChild(l);
+                
+                }else{
+                    d.appendChild(p);
+                    d.appendChild(l);
+                }
+            }); 
+            
+            this.panel.appendChild(o); 
 
            
             //this.hidable_control.appendChild(this.panel);
@@ -368,6 +378,7 @@ var getCSSAnimationManager = function() {
             }, a.location.origin)
         },
         onPrintButtonClick: function() {
+            
             this.addClass(this.panel, "hide"), a.setTimeout(function() {
                 "undefined" != typeof chrome ? chrome.runtime.sendMessage({
                     method: "takeScreenShotAndSave"
@@ -399,10 +410,12 @@ var getCSSAnimationManager = function() {
                 document.getElementById('NOTEPAD_HIDABLE_DIV').style.display = 'none';
                 document.getElementById('collapseBtn').innerHTML = '+';
                 this.isHidden = true;
+                this.addClass(this.canvas, "cursor");
             }else if(this.isHidden){
                 document.getElementById('NOTEPAD_HIDABLE_DIV').style.display = 'block';
                 document.getElementById('collapseBtn').innerHTML = '-';
                 this.isHidden = false;
+                this.removeClass(this.canvas, "cursor");
             }
            
         },

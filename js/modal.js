@@ -77,26 +77,6 @@ $(document).ready(function () {
             document.getElementById('img-bug-screenshot').src = items.screenshotImg;
         }
     });
-
-    // if(!$('#jiraModal').length){
-    //     $(jiraModal).appendTo('body');
-    //     $("#jiraModal").modal();
-        
-    //     chrome.storage.local.get('screenshotImg', function(items) {
-    //         if(items.screenshotImg && items.screenshotImg!==''){
-    //             document.getElementById('img-bug-screenshot').src = items.screenshotImg;
-    //         }
-    //     });  
-    // }else{
-    //     $(jiraModal).appendTo('body');
-    //     $("#jiraModal").modal();
-        
-    //     chrome.storage.local.get('screenshotImg', function(items) {
-    //         if(items.screenshotImg && items.screenshotImg!==''){
-    //             document.getElementById('img-bug-screenshot').src = items.screenshotImg;
-    //         }
-    //     }); 
-    // }
     
 
     $('#create-issue-btn').on('click',function(){
@@ -107,13 +87,6 @@ $(document).ready(function () {
         var summary = $('#issue-summary').val();
         var descr = $('#issue-descr').val();
         var img = $('#img-bug-screenshot').val();
-        
-        // var formData = new FormData();
-        // formData.append('issueType', issueType);
-        // formData.append('projectKey',projectKey);
-        // formData.append('summary',summary);
-        // formData.append('descr',descr);
-        // formData.append('file',img);
 
         var issue ={
                         "fields": {
@@ -143,9 +116,6 @@ $(document).ready(function () {
         }else{
              alert("Please fill all the fields !!");
         }
-        
-
-
 
     });
 
