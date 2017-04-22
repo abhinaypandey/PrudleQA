@@ -9,8 +9,8 @@ var currentTab, // result of chrome.tabs.query of current active tab
 //
 
 function $(id) { return document.getElementById(id); }
-function show(id) { $(id).style.display = 'block'; }
-function hide(id) { $(id).style.display = 'none'; }
+//function show(id) { $(id).style.display = 'block'; }
+//function hide(id) { $(id).style.display = 'none'; }
 
 
 function getFilename(contentURL) {
@@ -35,7 +35,7 @@ function getFilename(contentURL) {
 //
 function displayCaptures(filenames) {
     if (!filenames || !filenames.length) {
-        show('uh-oh');
+        //show('uh-oh');
         return;
     }
 
@@ -79,23 +79,23 @@ function _displayCapture(filenames, index) {
 
 
 function errorHandler(reason) {
-    show('uh-oh'); // TODO - extra uh-oh info?
+    //show('uh-oh'); // TODO - extra uh-oh info?
 }
 
 
 function progress(complete) {
     if (complete === 0) {
         // Page capture has just been initiated.
-        show('loading');
+        //show('loading');
     }
     else {
-        $('bar').style.width = parseInt(complete * 100, 10) + '%';
+        //$('bar').style.width = parseInt(complete * 100, 10) + '%';
     }
 }
 
 
 function splitnotifier() {
-    show('split-image');
+    //show('split-image');
 }
 
 

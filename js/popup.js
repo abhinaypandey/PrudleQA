@@ -38,6 +38,14 @@ function login() {
                 statusDisplay.innerHTML = 'Logged In';
                 statusDisplay.style.color = "green";
 
+                var intvId = setInterval(function(){
+                    statusDisplay.style.display = "none";
+                },2000);
+
+                setTimeout(function(){
+                    clearInterval(intvId);
+                },3000);
+
                 data.session.jiraUrl = jiraUrl;
                 saveSession(data);  
             }
@@ -154,7 +162,7 @@ function loadIssues(){
                         if(data){
                             $.each(data.issues,function(i){
                                 var issue = data.issues[i];
-                                $('#r'+i).html("<td><a href="+issueHyperlink+issue.key+" target='_blank'>"+issue.id+"</td><td><a href="+issueHyperlink+issue.key+"target='_blank'>"+issue.key+"</td>");
+                                $('#r'+i).html("<td><a href="+issueHyperlink+issue.key+" target='_blank'>"+issue.id+"</td><td><a href="+issueHyperlink+issue.key+" target='_blank'>"+issue.key+"</td>");
                                 
                                 $('#issues-table').append('<tr id="r'+(i+1)+'"></tr>').show();
                             });

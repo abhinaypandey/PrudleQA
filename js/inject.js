@@ -319,9 +319,9 @@ var getCSSAnimationManager = function() {
 
             
             this.backBtn.setAttribute("class", "NOTEPAD_controls_control_option backBtn"), 
-            this.backBtn.setAttribute("title", "Step backward"), 
+            this.backBtn.setAttribute("title", "Undo"), 
             this.nextBtn.setAttribute("class", "NOTEPAD_controls_control_option nextBtn"), 
-            this.nextBtn.setAttribute("title", "Step forward"), 
+            this.nextBtn.setAttribute("title", "Redo"), 
             k.addEventListener("click", Function.prototype.bind.call(this.onBugButtonClick, this)), 
             l.addEventListener("click", Function.prototype.bind.call(this.exit, this)), 
             o.addEventListener("click", Function.prototype.bind.call(this.toggleCollapse, this)), 

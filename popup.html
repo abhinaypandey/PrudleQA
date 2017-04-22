@@ -33,22 +33,27 @@
                         
                     </form>
                     <br/>
-                    <button class="btn btn-primary btn-sm" id="tools-btn">View Toolbar</button>
+                    <div class="col-xs-4" style="margin-right:10px;">
+                        <button class="btn btn-primary btn-sm" id="tools-btn">View Toolbar</button>
+                     </div>
+                     <div class="col-xs-4">
+                        <button class="btn btn-primary btn-sm" id="issues-btn" style="display: none">View issues</button>
+                    </div><br/>
                 </div><br/>
 
                 <div class="col-md-4" >
-                    <div class="form-group">
+                    <div class="col-xs-6">
                         <select class="form-control" id="project-drop-issues" style="display: none">
                         </select>
                     </div>
-                        <button class="btn btn-primary btn-sm" id="issues-btn" style="display: none">View issues</button>
-                        
-                </div><br/>
+                </div><br/><br/>
 
-                <div class="col-xs-4">
-                    <form id="logout-form" style="display: none">
-                            <button type="submit" class="btn btn-primary btn-sm " id="jira-logout-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Logging out">Log out</button>
-                    </form>
+                <div class="col-md-4">
+                     <div class="col-xs-6">
+                        <form id="logout-form" style="display: none">
+                                <button type="submit" class="btn btn-primary btn-sm " id="jira-logout-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Logging out">Log out</button>
+                        </form>
+                     </div>
                 </div><br/>
                     
                 <div class="col-xs-4">
