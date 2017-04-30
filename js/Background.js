@@ -48,6 +48,7 @@ window.CaptureAPI = (function() {
         chrome.tabs.captureVisibleTab(
             null, {format: 'png', quality: 100}, function(dataURI) {
                 if (dataURI) {
+
                     var image = new Image();
                     image.onload = function() {
                         data.image = {width: image.width, height: image.height};
@@ -204,6 +205,14 @@ window.CaptureAPI = (function() {
 
         // come up with file-system size with a little buffer
         var size = blob.size + (1024 / 2);
+        
+        // save dataURL/Blob to local storage 
+            chrome.storage.local.set({'screenshotImg': blob}, function() {
+            // Notify that we saved.
+            
+        });
+
+
 
         // create a blob for writing to a file
         var reqFileSystem = window.requestFileSystem || window.webkitRequestFileSystem;
@@ -345,6 +354,11 @@ function getFilename(contentURL) {
 //
 // Capture Handlers
 //
+
+function injectJiraModal(){
+     
+}
+
 function downloadCaptures(filenames) {
     if (!filenames || !filenames.length) {
         alert("unable to capture");
@@ -502,20 +516,33 @@ var BG = {
                     file: "js/lib/bootstrap.min.js",
                     allFrames: true
                 });
-                
-                chrome.tabs.executeScript(null, {
+
+                chrome.tabs.executeScript(currentTab, {
                     file: "js/modal.js"
                 });
 
             });
 
-            // capture screenshot before sending to JIRA 
+            //capture screenshot before sending to JIRA 
             chrome.tabs.captureVisibleTab(function(dataURL) {
                 chrome.storage.local.set({'screenshotImg': dataURL}, function() {
                     // Notify that we saved.
                     
                 });
             });
+
+            // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+            //     var tab = tabs[0];
+            //     currentTab = tab; // used in later calls to get tab info
+
+            //     var filename = getFilename(tab.url);
+
+            //     CaptureAPI.captureToFiles(tab, filename, injectJiraModal,
+            //                             errorHandler, progress, splitnotifier);
+                                        
+            // });
+
+            
     },
 
     takeScreenShotAndSave : function (){
@@ -620,6 +647,7 @@ var BG = {
                             if(items.screenshotImg && items.screenshotImg!==''){
 
                             var blob = BG.dataURItoBlob(items.screenshotImg);
+                            //var blob = items.screenshotImg;
                             var fd = new FormData();
                             fd.append("file", blob,"screenshot_"+issueKeyid+"_.png");
                             fd.append('comment', "screenshot");

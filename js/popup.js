@@ -159,12 +159,19 @@ function loadIssues(){
                         $('#issues-btn').button('loading');
                     },
                     success: function(data) {
+                        console.log(data);
                         if(data){
                             $.each(data.issues,function(i){
-                                var issue = data.issues[i];
-                                $('#r'+i).html("<td><a href="+issueHyperlink+issue.key+" target='_blank'>"+issue.id+"</td><td><a href="+issueHyperlink+issue.key+" target='_blank'>"+issue.key+"</td>");
-                                
-                                $('#issues-table').append('<tr id="r'+(i+1)+'"></tr>').show();
+                                if(data.issues.length<1){
+                                    $('#r'+i).html("<td>No issue has been created yet.</td>");
+                                    $('#issues-table').append('<tr id="r'+(i+1)+'"></tr>').show();
+                                }else{
+                                    var issue = data.issues[i];
+                                    $('#r'+i).html("<td><a href="+issueHyperlink+issue.key+" target='_blank'>"+issue.id+"</td><td><a href="+issueHyperlink+issue.key+" target='_blank'>"+issue.key+"</td>");
+                                    
+                                    $('#issues-table').append('<tr id="r'+(i+1)+'"></tr>').show();
+                                }
+                               
                             });
                         }
                         

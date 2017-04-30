@@ -397,11 +397,11 @@ var getCSSAnimationManager = function() {
                 }) : "undefined" != typeof self && null !== self && self.port ? self.port.emit("openJiraModal") : a.postMessage({
                     method: "openJiraModal"
                 }, a.location.origin)
-            }, 2000), a.setTimeout(Function.prototype.bind.call(function() {
+            }, 500), a.setTimeout(Function.prototype.bind.call(function() {
                 this.removeClass(this.panel, "hide");
                 this.canvas.parentNode.removeChild(this.canvas), this.panel.parentNode.removeChild(this.panel), a.document.removeEventListener("keydown", this.keydownBinded), a.document.removeEventListener("keypress", this.keypressBinded), a.document.removeEventListener("mouseup", this.handleDragDone), a.removeEventListener("resize", this.resizeBinded), a.removeEventListener("scroll", this.resizeBinded), this.canvas = null, this.context = null, this.selectedDrawOption = null, this.selectedColorOption = null, this.selectedAlphaOption = null, this.mousedown = !1, this.lastMouseDownLoc = null, this.drawingSurfaceImageData = null, this.paragraph = null, this.panel = null, this.initialized = !1, "undefined" != typeof self && null !== self && self.port ? (self.port.removeListener("get_pixel_color_response", this.setColorBinded), self.port.removeListener("get_data_response", this.renderBinded)) : "undefined" == typeof chrome && a.removeEventListener("message", this.handlePostMessageResponseBinded), "undefined" != typeof unsafeWindow && null !== unsafeWindow && (unsafeWindow.NOTEPAD_INIT = !1)
         
-            }, this), 2000)
+            }, this), 500)
             
             // a.setTimeout(function() {this.exit()},2000);
 

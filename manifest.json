@@ -7,11 +7,6 @@
         "scripts": ["js/Background.js","js/lib/jquery.js"],
         "persistent": false
     },
-    // "content_scripts" : [{
-    //     "matches": ["<all_urls>"],
-    //     "js" : ["js/content_script.js"],
-    //     "run_at": "document_end"
-    // }],
     "browser_action": {
         "default_title": "Prudle QA",
         "default_icon": "images/icon38.png",
