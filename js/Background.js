@@ -415,7 +415,9 @@ var BG = {
          chrome.runtime.onMessage.addListener(function(a, b, c) {
             if ("openJiraModal" === a.method){ BG.openJiraModal(c)}
             else if ("takeScreenShotAndSave" === a.method){ BG.takeScreenShotAndSave()}
+            else if ("takeWindowScreenShotAndSave" === a.method){ BG.takeWindowScreenShotAndSave()}
             else if ("createIssue" === a.method){ BG.createIssue(a.issueData); }
+            else if ("clearEverythingOnLogout" === a.method){ BG.clearEverythingOnLogout(); }
             else if ("get_pixel_color" === a.method) {
                 var d = a.point;
                 BG.getPixelColor(d, c)
@@ -556,22 +558,25 @@ var BG = {
         CaptureAPI.captureToFiles(tab, filename, downloadCaptures,
                                 errorHandler, progress, splitnotifier);
         });
-        // chrome.tabs.captureVisibleTab(function(dataURL) {
-        //     chrome.storage.local.set({'screenshotImg': dataURL}, function() {
-        //         // Notify that we saved.
-        //         var a = document.createElement("a");
-        //         document.body.appendChild(a);
-        //         a.style = "display: none";
+       
+    },
+    takeWindowScreenShotAndSave : function (){
+        chrome.tabs.captureVisibleTab(function(dataURL) {
+            chrome.storage.local.set({'screenshotImg': dataURL}, function() {
+                // Notify that we saved.
+                var a = document.createElement("a");
+                document.body.appendChild(a);
+                a.style = "display: none";
                 
-        //         blob = BG.dataURItoBlobAsOctateStream(dataURL);
-        //         url = window.URL.createObjectURL(blob);
-        //         a.href = url;
-        //         a.download = "screenshot.png";
-        //         a.click();
-        //         window.URL.revokeObjectURL(url);
+                blob = BG.dataURItoBlobAsOctateStream(dataURL);
+                url = window.URL.createObjectURL(blob);
+                a.href = url;
+                a.download = "screenshot.png";
+                a.click();
+                window.URL.revokeObjectURL(url);
                 
-        //     });
-        // });
+            });
+        });
        
     },
     updateScreenshot: function(a, b) {
@@ -685,6 +690,14 @@ var BG = {
     
 
         return status;
+    },
+
+    clearEverythingOnLogout: function(){
+        // chrome.runtime.sendMessage({
+        //     method: "onClearEverything"
+        // }, function(response) {
+           
+        // });
     }
 
 };

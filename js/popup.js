@@ -96,17 +96,18 @@ function logout(){
                     $('#jira-logout-btn').button('loading');
                 },
                 success: function(data) {
-                    console.log(data);
+                    //console.log(data);
                     if(data && data.status==401){
                             statusDisplay.innerHTML = data.responseJSON.errorMessages[0];
                             statusDisplay.style.color = "red";
                     }else if(data && data.status==204){
                            
+
                     }
                     
                 },
                 error:function(data){
-                    console.log(data);
+                    //console.log(data);
                     if(data){
                         statusDisplay.innerHTML = data.responseJSON.errorMessages[0];
                         statusDisplay.style.color = "red";
@@ -121,7 +122,16 @@ function logout(){
                         document.getElementById('project-drop-issues').style.display = "none";
                         document.getElementById('issues-table').style.display = "none"; 
                     });
+
                     $('#jira-logout-btn').button('reset');
+
+                    //TODO 
+                    // chrome.runtime.getBackgroundPage(function (backgroundPage) {
+                    //     // clear everything 
+                    //     backgroundPage.BG.clearEverythingOnLogout();
+                            
+                    // });
+                    
                 }
             });
         }
@@ -159,7 +169,7 @@ function loadIssues(){
                         $('#issues-btn').button('loading');
                     },
                     success: function(data) {
-                        console.log(data);
+                        //console.log(data);
                         if(data){
                             $.each(data.issues,function(i){
                                 if(data.issues.length<1){

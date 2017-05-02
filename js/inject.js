@@ -185,6 +185,7 @@ var getCSSAnimationManager = function() {
     }
 };
 ! function(a, b) {
+
     "undefined" != typeof unsafeWindow && null !== unsafeWindow ? unsafeWindow.NOTEPAD_INIT || (a.NOTEPAD = b(a), a.NOTEPAD.init()) : ("undefined" != typeof a.NOTEPAD && null !== a.NOTEPAD || (a.NOTEPAD = b(a)), a.NOTEPAD.initialized || a.NOTEPAD.init())
 }("undefined" != typeof theWindow ? theWindow : this, function(a) {
     var b = function() {
@@ -304,6 +305,7 @@ var getCSSAnimationManager = function() {
                 m = a.document.createElement("div");
                 o = a.document.createElement('span');
                 p = a.document.createElement("div");
+                q = a.document.createElement("div");
         
 
             // k.setAttribute("class", "NOTEPAD_controls_control_option prtBtn"),
@@ -316,7 +318,9 @@ var getCSSAnimationManager = function() {
             o.setAttribute("title","Hide control menu");
             o.innerHTML = '-';
             p.setAttribute("class", "NOTEPAD_controls_control_option prtBtn"), 
-            p.setAttribute("title", "Take a screenshot of the current web page with your drawings and save"),
+            p.setAttribute("title", "Take a screenshot of the complete web page with your drawings and save"),
+            q.setAttribute("class", "NOTEPAD_controls_control_option smallPrtBtn"), 
+            q.setAttribute("title", "Take a screenshot of the current window with your drawings and save"),
 
             
             this.backBtn.setAttribute("class", "NOTEPAD_controls_control_option backBtn"), 
@@ -327,6 +331,7 @@ var getCSSAnimationManager = function() {
             l.addEventListener("click", Function.prototype.bind.call(this.exit, this)), 
             o.addEventListener("click", Function.prototype.bind.call(this.toggleCollapse, this)), 
             p.addEventListener("click", Function.prototype.bind.call(this.onPrintButtonClick, this)),
+            q.addEventListener("click", Function.prototype.bind.call(this.onSmallPrintButtonClick, this)),
             // m.addEventListener("click", Function.prototype.bind.call(this.onBugButtonClick, this)),
             this.backBtn.addEventListener("click", Function.prototype.bind.call(this.handleBackButtonClick, this)), 
             this.nextBtn.addEventListener("click", Function.prototype.bind.call(this.handleForwardButtonClick, this)), 
@@ -338,10 +343,12 @@ var getCSSAnimationManager = function() {
                 if(items.name && items.value && items.jiraUrl){
                     d.appendChild(k);
                     d.appendChild(p);
+                    d.appendChild(q);
                     d.appendChild(l);
                 
                 }else{
                     d.appendChild(p);
+                    d.appendChild(q);
                     d.appendChild(l);
                 }
             }); 
@@ -385,6 +392,19 @@ var getCSSAnimationManager = function() {
                     method: "takeScreenShotAndSave"
                 }) : "undefined" != typeof self && null !== self && self.port ? self.port.emit("takeScreenShotAndSave") : a.postMessage({
                     method: "takeScreenShotAndSave"
+                }, a.location.origin)
+            }, 100)
+            // a.setTimeout(Function.prototype.bind.call(function() {
+            //     this.removeClass(this.panel, "hide")
+            // }, this), 3000)
+        },
+         onSmallPrintButtonClick: function() {
+            
+            this.addClass(this.panel, "hide"), a.setTimeout(function() {
+                "undefined" != typeof chrome ? chrome.runtime.sendMessage({
+                    method: "takeWindowScreenShotAndSave"
+                }) : "undefined" != typeof self && null !== self && self.port ? self.port.emit("takeWindowScreenShotAndSave") : a.postMessage({
+                    method: "takeWindowScreenShotAndSave"
                 }, a.location.origin)
             }, 100), a.setTimeout(Function.prototype.bind.call(function() {
                 this.removeClass(this.panel, "hide")
@@ -639,7 +659,14 @@ var getCSSAnimationManager = function() {
             }
         },
         exit: function() {
-            this.canvas.parentNode.removeChild(this.canvas), this.panel.parentNode.removeChild(this.panel), a.document.removeEventListener("keydown", this.keydownBinded), a.document.removeEventListener("keypress", this.keypressBinded), a.document.removeEventListener("mouseup", this.handleDragDone), a.removeEventListener("resize", this.resizeBinded), a.removeEventListener("scroll", this.resizeBinded), this.canvas = null, this.context = null, this.selectedDrawOption = null, this.selectedColorOption = null, this.selectedAlphaOption = null, this.mousedown = !1, this.lastMouseDownLoc = null, this.drawingSurfaceImageData = null, this.paragraph = null, this.panel = null, this.initialized = !1, "undefined" != typeof self && null !== self && self.port ? (self.port.removeListener("get_pixel_color_response", this.setColorBinded), self.port.removeListener("get_data_response", this.renderBinded)) : "undefined" == typeof chrome && a.removeEventListener("message", this.handlePostMessageResponseBinded), "undefined" != typeof unsafeWindow && null !== unsafeWindow && (unsafeWindow.NOTEPAD_INIT = !1)
+            var retVal = confirm("Do you want to continue ?");
+            if( retVal == true ){
+                this.canvas.parentNode.removeChild(this.canvas), this.panel.parentNode.removeChild(this.panel), a.document.removeEventListener("keydown", this.keydownBinded), a.document.removeEventListener("keypress", this.keypressBinded), a.document.removeEventListener("mouseup", this.handleDragDone), a.removeEventListener("resize", this.resizeBinded), a.removeEventListener("scroll", this.resizeBinded), this.canvas = null, this.context = null, this.selectedDrawOption = null, this.selectedColorOption = null, this.selectedAlphaOption = null, this.mousedown = !1, this.lastMouseDownLoc = null, this.drawingSurfaceImageData = null, this.paragraph = null, this.panel = null, this.initialized = !1, "undefined" != typeof self && null !== self && self.port ? (self.port.removeListener("get_pixel_color_response", this.setColorBinded), self.port.removeListener("get_data_response", this.renderBinded)) : "undefined" == typeof chrome && a.removeEventListener("message", this.handlePostMessageResponseBinded), "undefined" != typeof unsafeWindow && null !== unsafeWindow && (unsafeWindow.NOTEPAD_INIT = !1)
+            }
+            else{
+                return ;
+            }
+            
         },
         saveData: function() {
             "undefined" != typeof chrome ? chrome.runtime.sendMessage({

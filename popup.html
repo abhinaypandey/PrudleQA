@@ -9,12 +9,75 @@
 		<title>PrudleQA</title>
 		
 		<!-- Cascading Style Sheets -->
-		<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">		
+		<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+        <style>
+            .popup_header{
+                height: 40px;
+                padding-top: 10px;
+                padding-left: 5px;
+                color: #28b473;
+                line-height: 19px;
+                border-bottom: 1px solid rgba(0,0,0,0.06);
+                padding-bottom: 40px;
+                
+            }
+
+            .popup_header a{
+                text-decoration: none;
+                text-align: center;
+                font-size: 15px;
+                float: left;
+            }
+
+            .popup_footer{
+                font-size: 13px;
+                color: #323439;
+                line-height: 24px;
+                border-top: 1px solid rgba(0,0,0,0.06);
+                padding-top: 10px;
+                padding-left: 5px;
+                padding-bottom: 10px;
+                margin-top : 10px;
+            }
+
+            .popup_footer .footer_btn{
+                color: #adadb0;
+                transition: color 0.1s;
+                text-decoration: none;
+            }
+
+            .footer_btn:hover{
+                color: #5b5b5e;
+            }
+
+            .home_btn{
+                float: right;
+            }
+
+            .about_btn{
+                float: left;
+            }
+
+
+        </style>
 	</head>
 	
 	<body>
 	
 		<div class="container" style="width:300px;height:100px;">
+
+            <div class="popup_header row" >
+                <div class="col-xs-8">
+                    <a target="_blank" href="http://www.prudlelabs.com" class=""><img src="/images/icon38.png" alt="Prudle Logo"> PrudleQA</a>
+                </div>
+                <div class="col-xs-2">
+                    <form id="logout-form" style="display: none">
+                            <button type="submit" class="btn btn-primary btn-sm " id="jira-logout-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Logging out">Log out</button>
+                    </form>
+             
+                </div>
+            </div>
             <div class="row">
                 <div class="col-md-4">
                     <form id="login-form">
@@ -48,14 +111,6 @@
                         </select>
                     </div>
                 </div>
-
-                <div class="col-md-4">
-                     <div class="col-xs-6">
-                        <form id="logout-form" style="display: none">
-                                <button type="submit" class="btn btn-primary btn-sm " id="jira-logout-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Logging out">Log out</button>
-                        </form>
-                     </div>
-                </div><br/><br/>
                     
                 <div class="col-xs-4">
                     <span id="status-display"></span>
@@ -64,20 +119,29 @@
 
             </div>
             <div class='row'>
-                    <table id="issues-table" class="table" style="display:none;margin-top:50px;">
+                <div class="col-md-9">
+                    <table id="issues-table" class="table" style="display:none;">
                         <thead>
-                        <tr><th><p class="form-signin-heading">List of recently reported issues </h2></p></tr>
+                        <tr><td><p class="form-signin-heading">List of recently reported issues </p></td></tr>
                         <tr>
-                            <th>ID</th>
-                            <th>Name</th>
+                            <td>ID</td>
+                            <td>Name</td>
                         </tr>
                         </thead>
                         <tbody>
                             <tr id='r0'></tr>
                         </tbody>
                     </table>
-                
+                </div>
+            </div>
 
+            <div class='popup_footer row'>
+                <div class="col-sm-9">
+                    <a href="https://www.prudlelabs.com" target="_blank" class="footer_btn about_btn">About</a>
+                </div>
+                <div class="col-sm-3">
+                    <a href="https://www.prudlelabs.com" target="_blank" class="footer_btn home_btn">Prudle Home</a>
+                </div>
             </div>
 
         </div>
