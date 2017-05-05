@@ -21,8 +21,15 @@ $(document).ready(function () {
                 success: function(data) {
                     $('#issue-drop').html('');
                     $('<option value="">Select issue type</option>').appendTo('#issue-drop');
+                
                     $.each(data,function(i){
-                        $('<option value="'+data[i].id+'">'+data[i].name+'</option>').appendTo('#issue-drop');
+                        var id = +data[i].id;
+                        if(id === 10000 || id === 10102){
+                           
+                        }else{
+                            $('<option value="'+id+'">'+data[i].name+'</option>').appendTo('#issue-drop');
+                        }
+                        
                     });
                 }
             });
@@ -32,7 +39,7 @@ $(document).ready(function () {
  
 
     var jiraModal = $('<div class="modal fade" id="jiraModal" role="dialog" style="z-index:100000;"></div>')
-        .html('<div class="modal-dialog modal-lg">'+
+        .html('<div class="modal-dialog modal-md">'+
             '<div class="modal-content">'+
                 '<div class="modal-header">'+
                     '<button type="button" class="close" data-dismiss="modal">&times;</button>'+
@@ -55,6 +62,9 @@ $(document).ready(function () {
                         '<div class="form-group">'+
                             '<label for="issue-descr">Description</label>'+
                             '<textarea class="form-control" rows="5" id="issue-descr"></textarea>'+
+                        '</div>'+
+                        '<div class="checkbox">'+
+                            '<label><input type="checkbox" id="include-screenshot" checked value="1">Include Screenshot</label>'+
                         '</div>'+
                         '<label for="img-bug-screenshot">Issue screenshot</label>'+
                         '<div class="form-group" style="overflow:auto;max-height:600px;max-width:500px;">'+
@@ -87,6 +97,7 @@ $(document).ready(function () {
         var summary = $('#issue-summary').val();
         var descr = $('#issue-descr').val();
         var img = $('#img-bug-screenshot').val();
+        var include = $('#include-screenshot').is(':checked') ? true : false ;
 
         var issue ={
                         "fields": {
@@ -104,14 +115,18 @@ $(document).ready(function () {
                         }
                     };
 
+        var form_data = {};
+        form_data.issueData = issue;
+        form_data.includeScreenshot = include;
+
         // console.log(issue);
 
         if(issueTypeId!=='' && projectId!=='' && summary!=='' && descr!==''){
             chrome.runtime.sendMessage({
                 method: "createIssue",
-                issueData : issue
+                data : form_data
             }, function(response) {
-                console.log("res:"+response);
+                $('#jiraModal').modal('hide');
             }); 
         }else{
              alert("Please fill all the fields !!");

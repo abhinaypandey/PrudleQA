@@ -14,7 +14,7 @@
         <style>
             .popup_header{
                 height: 40px;
-                padding-top: 10px;
+                padding-top: 5px;
                 padding-left: 5px;
                 color: #28b473;
                 line-height: 19px;
@@ -59,17 +59,115 @@
                 float: left;
             }
 
+            /* The snackbar - position it at the bottom and in the middle of the screen */
+            #about_snackbar {
+                visibility: hidden; /* Hidden by default. Visible on click */
+                min-width: 250px; /* Set a default minimum width */
+                margin-left: -125px; /* Divide value of min-width by 2 */
+                background-color: #fff; /* Black background color */
+                color: #333; /* White text color */
+                text-align: center; /* Centered text */
+                border-radius: 2px; /* Rounded borders */
+                padding: 16px; /* Padding */
+                position: fixed; /* Sit on top of the screen */
+                z-index: 1; /* Add a z-index if needed */
+                left: 50%; /* Center the snackbar */
+                bottom: 0px; /* 30px from the bottom */
+                height: 360px;
+                opacity: 1;
+            }
+
+            /* Show the snackbar when clicking on a button (class added with JavaScript) */
+            #about_snackbar.show {
+                visibility: visible; /* Show the snackbar */
+
+            /* Add animation: Take 0.5 seconds to fade in and out the snackbar. 
+            However, delay the fade out process for 2.5 seconds */
+                -webkit-animation: fadein 0.5s, fadeout 0.5s 4.5s;
+                animation: fadein 0.5s, fadeout 0.5s 4.5s;
+            }
+
+            /* The snackbar - position it at the bottom and in the middle of the screen */
+            #msg_snackbar {
+                visibility: hidden; /* Hidden by default. Visible on click */
+                min-width: 250px; /* Set a default minimum width */
+                margin-left: -125px; /* Divide value of min-width by 2 */
+                background-color: #333; /* Black background color */
+                color: #fff; /* White text color */
+                text-align: center; /* Centered text */
+                border-radius: 2px; /* Rounded borders */
+                padding: 16px; /* Padding */
+                position: fixed; /* Sit on top of the screen */
+                z-index: 1; /* Add a z-index if needed */
+                left: 50%; /* Center the snackbar */
+                bottom: 0px; /* 30px from the bottom */
+                height: auto;
+                font-size: 12px;
+            }
+
+            /* Show the snackbar when clicking on a button (class added with JavaScript) */
+            #msg_snackbar.show {
+                visibility: visible; /* Show the snackbar */
+
+            /* Add animation: Take 0.5 seconds to fade in and out the snackbar. 
+            However, delay the fade out process for 2.5 seconds */
+                -webkit-animation: fadeinMsg 0.5s, fadeoutMsg 0.5s 2.5s;
+                animation: fadeinMsg 0.5s, fadeoutMsg 0.5s 2.5s;
+            }
+
+            /* Animations to fade the snackbar in and out */
+            @-webkit-keyframes fadein {
+                from {bottom: -50px; opacity: 0;} 
+                to {bottom: 0px; opacity: 1;}
+            }
+
+            @keyframes fadein {
+                from {bottom: -50px; opacity: 0;}
+                to {bottom: 0px; opacity: 1;}
+            }
+
+            @-webkit-keyframes fadeout {
+                from {bottom: 0px; opacity: 1;} 
+                to {bottom: -50px; opacity: 0;}
+            }
+
+            @keyframes fadeout {
+                from {bottom: 0px; opacity: 1;}
+                to {bottom: -50px; opacity: 0;}
+            }
+
+            /* Animations to fade the message snackbar in and out */
+            @-webkit-keyframes fadeinMsg {
+                from {bottom: -50px; opacity: 0;} 
+                to {bottom: 0px; opacity: 1;}
+            }
+
+            @keyframes fadeinMsg {
+                from {bottom: -50px; opacity: 0;}
+                to {bottom: 0px; opacity: 1;}
+            }
+
+            @-webkit-keyframes fadeoutMsg {
+                from {bottom: 0px; opacity: 1;} 
+                to {bottom: -50px; opacity: 0;}
+            }
+
+            @keyframes fadeoutMsg {
+                from {bottom: 0px; opacity: 1;}
+                to {bottom: -50px; opacity: 0;}
+            }
+
 
         </style>
 	</head>
 	
 	<body>
 	
-		<div class="container" style="width:300px;height:100px;">
+		<div class="container" style="width:260px;height:100px;">
 
             <div class="popup_header row" >
                 <div class="col-xs-8">
-                    <a target="_blank" href="http://www.prudlelabs.com" class=""><img src="/images/icon38.png" alt="Prudle Logo"> PrudleQA</a>
+                    <a target="_blank" href="http://www.prudlelabs.com" class=""><img src="/images/prudle-logo-38.png" alt="Prudle Logo"></a>
                 </div>
                 <div class="col-xs-2">
                     <form id="logout-form" style="display: none">
@@ -81,7 +179,7 @@
             <div class="row">
                 <div class="col-md-4">
                     <form id="login-form">
-                        <h4 class="form-signin-heading">Please log into JIRA</h2>
+                           <h5 class="form-signin-heading">Please log into JIRA</h5>    
                         <div class="form-group">
                             <input type="text" class="form-control" id="jiraUrl" name="jiraUrl" placeholder="JIRA url : example.atlassian.net">
                         </div>
@@ -92,29 +190,25 @@
                             <input type="password" class="form-control" id="password" name="password" placeholder="Password">
                         </div>
 
-                        <button type="submit" class="btn btn-primary btn-sm " id="jira-auth-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Signing In">Sign In</button> 
+                        <button type="submit" class="btn btn-primary btn-block  btn-sm " id="jira-auth-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Signing In">Sign In</button> 
                         
                     </form>
                     
                 </div>
                 <br/>
-                <div class="col-xs-4">
-                    <button class="btn btn-primary btn-sm" id="tools-btn">View Toolbar</button>
-                </div>
-                <div class="col-xs-4">
-                    <button class="btn btn-primary btn-sm" id="issues-btn" style="display: none">View issues</button>
-                </div><br/><br/>
+                 <div class="col-md-4" >
+                        <button class="btn btn-primary btn-block btn-sm" id="tools-btn">View Toolbar</button>
+                 </div><br/>
 
                 <div class="col-md-4" >
-                    <div class="col-xs-6" style="padding-left:0px;">
-                        <select class="form-control" id="project-drop-issues" style="display: none">
-                        </select>
-                    </div>
-                </div>
+                    <select class="form-control" id="project-drop-issues" style="display: none">
+                    </select>
+                </div><br/>
+                 <div class="col-md-4" >
+                        <button class="btn btn-primary  btn-block btn-sm" id="issues-btn" style="display: none">View issues</button>
+                 </div>
                     
-                <div class="col-xs-4">
-                    <span id="status-display"></span>
-                </div>
+                <div id="msg_snackbar"></div>
                
 
             </div>
@@ -137,12 +231,14 @@
 
             <div class='popup_footer row'>
                 <div class="col-sm-9">
-                    <a href="https://www.prudlelabs.com" target="_blank" class="footer_btn about_btn">About</a>
+                    <a href="#" id="abt_btn" class="footer_btn about_btn" >About</a>
                 </div>
                 <div class="col-sm-3">
                     <a href="https://www.prudlelabs.com" target="_blank" class="footer_btn home_btn">Prudle Home</a>
                 </div>
             </div>
+
+            <div id="about_snackbar">Prudle’s Localization QA module significantly reduces manual effort, save upto 50% defect raising time and increases overall efficiency. L10N  testers do not have to switch between windows to capture screenshots and raise localization defects. It allows LQA testers to be focused on what needs to be validated.</div>
 
         </div>
 	
@@ -150,6 +246,7 @@
     <script src="js/lib/jquery.js"></script>
     <script src="js/lib/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/popup.js"></script>
+
 </body>
     
 </html>

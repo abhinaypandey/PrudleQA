@@ -11,6 +11,7 @@ function login() {
     var pass = document.getElementById('password').value;
 
     if(isEmpty(jiraUrl) || isEmpty(user) || isEmpty(pass)){
+        openMsgSnackbar("Oops! You missed some fields ");
         return;
     }
     var formData = {
@@ -35,28 +36,25 @@ function login() {
         },
         success: function(data) {
             if(data.session){
-                statusDisplay.innerHTML = 'Logged In';
-                statusDisplay.style.color = "green";
-
-                var intvId = setInterval(function(){
-                    statusDisplay.style.display = "none";
-                },2000);
-
-                setTimeout(function(){
-                    clearInterval(intvId);
-                },3000);
+                openMsgSnackbar('Logged In');
 
                 data.session.jiraUrl = jiraUrl;
                 saveSession(data);  
+
+                // enable report generation button if disabled;
+                chrome.runtime.getBackgroundPage(function (backgroundPage) {
+                    // clear everything 
+                    backgroundPage.BG.enableJiraReporting();
+                        
+                });
+
             }
             
         },
         error:function(data){
             if(!data.session){
-                statusDisplay.innerHTML = 'Login Failed';
-                statusDisplay.style.color = "red";
+                openMsgSnackbar(data.responseJSON.errorMessages[0], 'red');
                 var intvId = setInterval(function(){
-                    statusDisplay.style.display = "none";
                     $('#login-form input').val('');
                 },3000);
 
@@ -101,7 +99,6 @@ function logout(){
                             statusDisplay.innerHTML = data.responseJSON.errorMessages[0];
                             statusDisplay.style.color = "red";
                     }else if(data && data.status==204){
-                           
 
                     }
                     
@@ -109,8 +106,7 @@ function logout(){
                 error:function(data){
                     //console.log(data);
                     if(data){
-                        statusDisplay.innerHTML = data.responseJSON.errorMessages[0];
-                        statusDisplay.style.color = "red";
+                        openMsgSnackbar(data.responseJSON.errorMessages[0]);
                     }   
                     
                 },
@@ -124,13 +120,12 @@ function logout(){
                     });
 
                     $('#jira-logout-btn').button('reset');
-
-                    //TODO 
-                    // chrome.runtime.getBackgroundPage(function (backgroundPage) {
-                    //     // clear everything 
-                    //     backgroundPage.BG.clearEverythingOnLogout();
+                    // disable report generation button if disabled;
+                    chrome.runtime.getBackgroundPage(function (backgroundPage) {
+                        // clear everything 
+                        backgroundPage.BG.disableJiraReporting();
                             
-                    // });
+                    });
                     
                 }
             });
@@ -187,17 +182,15 @@ function loadIssues(){
                         
                     },
                     error:function(data){
-                        statusDisplay.innerHTML = data.responseJSON.errorMessages[0];
-                        statusDisplay.style.color = "red"; 
-                        setInterval(function(){
-                           statusDisplay.style.display = "none";
-                        },400);
+                    openMsgSnackbar(data.responseJSON.errorMessages[0]);
                         
                     },
                     complete:function(xhr,status){
                         $('#issues-btn').button('reset');
                     }
                 });
+            }else{
+               openMsgSnackbar("Select project from dropdown first");
             }
            
         }
@@ -279,17 +272,41 @@ function loadProjectList(jiraUrl){
         });
 }
 
+function openSnackbar() {
+    // Get the snackbar DIV
+    var x = document.getElementById("about_snackbar");
+
+    // Add the "show" class to DIV
+    x.className = "show";
+
+    // After 3 seconds, remove the show class from DIV
+    setTimeout(function(){ x.className = x.className.replace("show", ""); }, 5000);
+}
+
+function openMsgSnackbar(content) {
+    // Get the snackbar DIV
+    var x = document.getElementById("msg_snackbar");
+    // x.style.color = '#536DFE';
+    x.innerHTML = content;
+
+    // Add the "show" class to DIV
+    x.className = "show";
+
+    // After 3 seconds, remove the show class from DIV
+    setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+}
+
 // When the popup HTML has loaded
 window.addEventListener('load', function(evt) {
     // check for existing session on extension icon click
     chrome.browserAction.onClicked.addListener(getSession());
 
-    statusDisplay = document.getElementById('status-display');
     // Handle the form submit event with our signinfunction
     document.getElementById('login-form').addEventListener('submit', login);
     document.getElementById('logout-form').addEventListener('submit', logout);
     document.getElementById('tools-btn').addEventListener('click', loadTools);
     document.getElementById('issues-btn').addEventListener('click', loadIssues);
+    document.getElementById("abt_btn").addEventListener("click", openSnackbar);
     
 });
 

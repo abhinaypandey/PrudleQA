@@ -7,8 +7,6 @@ function onMessage(data, sender, callback) {
         return true;
     } else if (data.msg == 'logMessage') {
         console.log('[POPUP LOG]', data.data);
-    } else if (data.method == 'take_screen_shot') {
-        console.log(CaptureScreenAPI.getFilename("https://www.google.com"));
     } else {
         console.error('Unknown message received from background: ' + data.msg);
     }

@@ -185,9 +185,39 @@ var getCSSAnimationManager = function() {
     }
 };
 ! function(a, b) {
+    // chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
+    //     if (msg.action === 'clearEverything') {
+    //         var canvasId = document.getElementById("NOTEPAD");
+    //         var panelId =  document.getElementById("NOTEPAD_controls");
+
+    //         // canvasId.parentNode.removeChild(canvasId);
+    //         // panelId.parentNode.removeChild(panelId);
+    //         if(canvasId && panelId){
+    //             canvasId.style.display = 'none';
+    //             panelId.style.display = 'none';
+    //         }
+            
+    //     }
+    // });
+
+    chrome.extension.onMessage.addListener(function(msg, sender, sendResponse) {
+        if (msg.action === 'enableJiraReportingBtn') { 
+            var jiraBugBtnClassList = document.getElementsByClassName("bugBtn")[0].classList; 
+            if (jiraBugBtnClassList.contains("disabled")) {
+                jiraBugBtnClassList.remove("disabled");
+            }
+            
+        } else if(msg.action === 'disableJiraReportingBtn'){
+            var jiraBugBtnClassList = document.getElementsByClassName("bugBtn")[0].classList; 
+            if (!jiraBugBtnClassList.contains("disabled")) {
+                jiraBugBtnClassList.add("disabled");
+            }
+        }
+    });
 
     "undefined" != typeof unsafeWindow && null !== unsafeWindow ? unsafeWindow.NOTEPAD_INIT || (a.NOTEPAD = b(a), a.NOTEPAD.init()) : ("undefined" != typeof a.NOTEPAD && null !== a.NOTEPAD || (a.NOTEPAD = b(a)), a.NOTEPAD.initialized || a.NOTEPAD.init())
 }("undefined" != typeof theWindow ? theWindow : this, function(a) {
+    
     var b = function() {
         this.MAX_ITEMS = 50, this.currentIndex = 0, this.array = []
     };
@@ -338,22 +368,27 @@ var getCSSAnimationManager = function() {
             d.appendChild(this.backBtn), 
             d.appendChild(this.nextBtn),
 
+            d.appendChild(k);
+            d.appendChild(p);
+            d.appendChild(q);
+            d.appendChild(l);
+            this.panel.appendChild(o); 
+
             // show bug report button only when user is logged in 
             chrome.storage.local.get(null, function(items) {
-                if(items.name && items.value && items.jiraUrl){
-                    d.appendChild(k);
-                    d.appendChild(p);
-                    d.appendChild(q);
-                    d.appendChild(l);
-                
+                var myButtonClasses = document.getElementsByClassName("bugBtn")[0].classList;
+                if(items.name && items.value && items.jiraUrl){ 
+                    if (myButtonClasses.contains("disabled")) {
+                        myButtonClasses.remove("disabled");
+                    }
                 }else{
-                    d.appendChild(p);
-                    d.appendChild(q);
-                    d.appendChild(l);
+                    if (myButtonClasses.contains("disabled")) {
+                        myButtonClasses.remove("disabled");
+                    } else {
+                        myButtonClasses.add("disabled");
+                    }
                 }
             }); 
-            
-            this.panel.appendChild(o); 
 
            
             //this.hidable_control.appendChild(this.panel);
@@ -390,13 +425,23 @@ var getCSSAnimationManager = function() {
             this.addClass(this.panel, "hide"), a.setTimeout(function() {
                 "undefined" != typeof chrome ? chrome.runtime.sendMessage({
                     method: "takeScreenShotAndSave"
+                },function(response){
+                    // chrome.storage.local.get('scroll_progress', function(result){
+                    //     var ob = result;
+                    //     if(ob.scroll_progress === "complete"){
+                    //         a.setTimeout(Function.prototype.bind.call(function() {
+                    //             this.removeClass(this.panel, "hide")
+                    //         }, this), 5000);
+                    //     }
+                    // });
+                    
                 }) : "undefined" != typeof self && null !== self && self.port ? self.port.emit("takeScreenShotAndSave") : a.postMessage({
                     method: "takeScreenShotAndSave"
-                }, a.location.origin)
-            }, 100)
-            // a.setTimeout(Function.prototype.bind.call(function() {
-            //     this.removeClass(this.panel, "hide")
-            // }, this), 3000)
+                },a.location.origin)
+            }, 1000), a.setTimeout(Function.prototype.bind.call(function() {
+                this.removeClass(this.panel, "hide")
+            }, this), 5000)
+           
         },
          onSmallPrintButtonClick: function() {
             
@@ -406,9 +451,9 @@ var getCSSAnimationManager = function() {
                 }) : "undefined" != typeof self && null !== self && self.port ? self.port.emit("takeWindowScreenShotAndSave") : a.postMessage({
                     method: "takeWindowScreenShotAndSave"
                 }, a.location.origin)
-            }, 100), a.setTimeout(Function.prototype.bind.call(function() {
+            }, 2000), a.setTimeout(Function.prototype.bind.call(function() {
                 this.removeClass(this.panel, "hide")
-            }, this), 500)
+            }, this), 2000)
         },
         onBugButtonClick: function() {
             this.addClass(this.panel, "hide"), a.setTimeout(function() {
@@ -421,7 +466,7 @@ var getCSSAnimationManager = function() {
                 this.removeClass(this.panel, "hide");
                 this.canvas.parentNode.removeChild(this.canvas), this.panel.parentNode.removeChild(this.panel), a.document.removeEventListener("keydown", this.keydownBinded), a.document.removeEventListener("keypress", this.keypressBinded), a.document.removeEventListener("mouseup", this.handleDragDone), a.removeEventListener("resize", this.resizeBinded), a.removeEventListener("scroll", this.resizeBinded), this.canvas = null, this.context = null, this.selectedDrawOption = null, this.selectedColorOption = null, this.selectedAlphaOption = null, this.mousedown = !1, this.lastMouseDownLoc = null, this.drawingSurfaceImageData = null, this.paragraph = null, this.panel = null, this.initialized = !1, "undefined" != typeof self && null !== self && self.port ? (self.port.removeListener("get_pixel_color_response", this.setColorBinded), self.port.removeListener("get_data_response", this.renderBinded)) : "undefined" == typeof chrome && a.removeEventListener("message", this.handlePostMessageResponseBinded), "undefined" != typeof unsafeWindow && null !== unsafeWindow && (unsafeWindow.NOTEPAD_INIT = !1)
         
-            }, this), 500)
+            }, this), 1000)
             
             // a.setTimeout(function() {this.exit()},2000);
 
@@ -487,7 +532,7 @@ var getCSSAnimationManager = function() {
             this.canvas.addEventListener("mousedown", b), this.canvas.addEventListener("touchstart", b), this.canvas.addEventListener("mousemove", c), this.canvas.addEventListener("touchmove", c), this.canvas.addEventListener("mouseup", d), this.canvas.addEventListener("touchend", d), this.canvas.addEventListener("mouseleave", e), a.document.addEventListener("keydown", this.keydownBinded), a.document.addEventListener("keypress", this.keypressBinded)
         },
         initMessageHandler: function() {
-            "undefined" != typeof self && null !== self && self.port ? (self.port.on("get_pixel_color_response", this.setColorBinded), self.port.on("get_data_response", this.renderBinded)) : "undefined" == typeof chrome && a.addEventListener("message", this.handlePostMessageResponseBinded, !1)
+            "undefined" != typeof self && null !== self && self.port ? (self.port.on("get_pixel_color_response", this.setColorBinded), self.port.on("get_data_response", this.renderBinded),self.port.on("clearEverything", this.exit)) : "undefined" == typeof chrome && a.addEventListener("message", this.handlePostMessageResponseBinded, !1)
         },
         matchOutlineColor: function(a, b, c, d) {
             return 255 !== a && 255 !== b && 255 !== c && 0 !== d
@@ -659,7 +704,7 @@ var getCSSAnimationManager = function() {
             }
         },
         exit: function() {
-            var retVal = confirm("Do you want to continue ?");
+            var retVal = confirm("Do you want to close Prudle toolbar ?");
             if( retVal == true ){
                 this.canvas.parentNode.removeChild(this.canvas), this.panel.parentNode.removeChild(this.panel), a.document.removeEventListener("keydown", this.keydownBinded), a.document.removeEventListener("keypress", this.keypressBinded), a.document.removeEventListener("mouseup", this.handleDragDone), a.removeEventListener("resize", this.resizeBinded), a.removeEventListener("scroll", this.resizeBinded), this.canvas = null, this.context = null, this.selectedDrawOption = null, this.selectedColorOption = null, this.selectedAlphaOption = null, this.mousedown = !1, this.lastMouseDownLoc = null, this.drawingSurfaceImageData = null, this.paragraph = null, this.panel = null, this.initialized = !1, "undefined" != typeof self && null !== self && self.port ? (self.port.removeListener("get_pixel_color_response", this.setColorBinded), self.port.removeListener("get_data_response", this.renderBinded)) : "undefined" == typeof chrome && a.removeEventListener("message", this.handlePostMessageResponseBinded), "undefined" != typeof unsafeWindow && null !== unsafeWindow && (unsafeWindow.NOTEPAD_INIT = !1)
             }
@@ -696,7 +741,9 @@ var getCSSAnimationManager = function() {
                 this.resizeTimeoutID && (this.resizeTimeoutID = a.clearTimeout(this.resizeTimeoutID)), this.resizeTimeoutID = a.setTimeout(Function.prototype.bind.call(this.handleResize, this), 200)
             }, this), this.initMessageHandler(), this.initConfig(), this.initialized = !0, "undefined" != typeof unsafeWindow && null !== unsafeWindow && (unsafeWindow.NOTEPAD_INIT = !0)
         }
+
     };
 
+     
     return c
 });

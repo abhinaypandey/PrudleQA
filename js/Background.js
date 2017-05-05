@@ -1,6 +1,5 @@
 //captureAPI 
 
-
 window.CaptureAPI = (function() {
 
     var MAX_PRIMARY_DIMENSION = 15000 * 2,
@@ -382,7 +381,7 @@ function _downloadCapture(filenames, index) {
     a.href = filenames[0];
     a.download = "screenshot.png";
     a.click();
-    window.URL.revokeObjectURL(url);
+    //window.URL.revokeObjectURL(url);
 
     if (!last) {
         _displayCapture(filenames, index + 1);
@@ -396,12 +395,15 @@ function errorHandler(reason) {
 
 
 function progress(complete) {
-    if (complete === 0) {
-        // Page capture has just been initiated.
-        //show('loading');
+    if (complete === 1) {
+        try {
+            localStorage.setItem("scroll_progress", JSON.stringify("complete"));
+        } catch (b) {}
     }
     else {
-        //$('bar').style.width = parseInt(complete * 100, 10) + '%';
+        try {
+            localStorage.setItem("scroll_progress", JSON.stringify("loading"));
+        } catch (b) {}
     }
 }
 
@@ -416,8 +418,10 @@ var BG = {
             if ("openJiraModal" === a.method){ BG.openJiraModal(c)}
             else if ("takeScreenShotAndSave" === a.method){ BG.takeScreenShotAndSave()}
             else if ("takeWindowScreenShotAndSave" === a.method){ BG.takeWindowScreenShotAndSave()}
-            else if ("createIssue" === a.method){ BG.createIssue(a.issueData); }
+            else if ("createIssue" === a.method){ BG.createIssue(a.data); }
             else if ("clearEverythingOnLogout" === a.method){ BG.clearEverythingOnLogout(); }
+            else if ("enableJiraReporting" === a.method){ BG.enableJiraReporting(); }
+            else if ("disableJiraReporting" === a.method){ BG.disableJiraReporting(); }
             else if ("get_pixel_color" === a.method) {
                 var d = a.point;
                 BG.getPixelColor(d, c)
@@ -573,7 +577,7 @@ var BG = {
                 a.href = url;
                 a.download = "screenshot.png";
                 a.click();
-                window.URL.revokeObjectURL(url);
+                // window.URL.revokeObjectURL(url);
                 
             });
         });
@@ -629,16 +633,16 @@ var BG = {
         return new Blob([ia], {type:mimeString});
     },
 
-    createIssue: function (issueData){
+    createIssue: function (fdata){
          var status;
          chrome.storage.local.get(null, function(items) {
             if(items.name && items.value && items.jiraUrl){
-                console.log(issueData);
+                console.log(fdata.issueData);
                 var jiraUrl = items.jiraUrl;
                 $.ajax({
                     url: "https://"+jiraUrl+"/rest/api/2/issue/",
                     type: 'POST', 
-                    data : JSON.stringify(issueData),
+                    data : JSON.stringify(fdata.issueData),
                     dataType: "json", 
                     xhrFields: {
                             withCredentials: true
@@ -647,57 +651,78 @@ var BG = {
                     success: function(data) {
                         
                         issueKeyid = data.key;
+                        if(fdata.includeScreenshot){
+                            
+                            chrome.storage.local.get('screenshotImg', function(items) {
+                                    if(items.screenshotImg && items.screenshotImg!==''){
 
-                        chrome.storage.local.get('screenshotImg', function(items) {
-                            if(items.screenshotImg && items.screenshotImg!==''){
+                                        var blob = BG.dataURItoBlob(items.screenshotImg);
+                                        //var blob = items.screenshotImg;
+                                        var fd = new FormData();
+                                        fd.append("file", blob,issueKeyid+"_screenshot.png");
+                                        fd.append('comment', "screenshot");
+                                        fd.append('minorEdit', "true");
 
-                            var blob = BG.dataURItoBlob(items.screenshotImg);
-                            //var blob = items.screenshotImg;
-                            var fd = new FormData();
-                            fd.append("file", blob,"screenshot_"+issueKeyid+"_.png");
-                            fd.append('comment', "screenshot");
-                            fd.append('minorEdit', "true");
-
-                            $.ajax({
-                                url: "https://"+jiraUrl+"/rest/api/2/issue/"+issueKeyid+"/attachments",
-                                type: 'POST', 
-                                data: fd,
-                                processData: false,
-                                contentType: false,
-                                headers: {
-                                    "X-Atlassian-Token": "nocheck"
-                                },
-                                success: function(data) {
-                                    status = "success";
-                                    alert("Issue ID "+issueKeyid+" created successfully");
-                                    
-                                },
-                                error:function(data){
-                                    status = "failed";
-                                    alert("Could not create issue. Something went wrong !!");
-                                }
-                            });
-            
-                            }
-                        });
+                                        $.ajax({
+                                            url: "https://"+jiraUrl+"/rest/api/2/issue/"+issueKeyid+"/attachments",
+                                            type: 'POST', 
+                                            data: fd,
+                                            processData: false,
+                                            contentType: false,
+                                            headers: {
+                                                "X-Atlassian-Token": "nocheck"
+                                            },
+                                            success: function(data) {
+                                                status = "success";
+                                                alert("Issue ID "+issueKeyid+" created successfully");
+                                                
+                                                
+                                            },
+                                            error:function(data){
+                                                status = "failed";
+                                                alert("Could not create issue. Something went wrong !!");
+                                            
+                                            }
+                                        });
                         
+                                    }
+                                });
+                        }else{
+                            alert("Issue ID "+issueKeyid+" created successfully");
+                        }
+                           
+                    },
+                    error: function(){
+                        status = "failed";
+                        alert("Could not create issue. Something went wrong !!");
                     }
                 });
 
          }
 
          });
-    
-
         return status;
     },
 
     clearEverythingOnLogout: function(){
-        // chrome.runtime.sendMessage({
-        //     method: "onClearEverything"
-        // }, function(response) {
-           
-        // });
+        chrome.tabs.query({active: true, currentWindow: true}, function(tabs){
+            chrome.tabs.sendMessage(tabs[0].id, {action: "clearEverything"}, function(response) {});  
+        });
+    },
+
+    enableJiraReporting: function(){
+        chrome.tabs.query({active: true}, function(tabs){
+            chrome.tabs.sendMessage(tabs[0].id, {action: "enableJiraReportingBtn"}, function(response) {});  
+        });
+    },
+    disableJiraReporting: function(){
+        chrome.tabs.query({active: true}, function(tabs){
+            chrome.tabs.sendMessage(tabs[0].id, {action: "disableJiraReportingBtn"}, function(response) {});  
+        });
+    },
+
+    hideJiraModal: function(){
+
     }
 
 };
