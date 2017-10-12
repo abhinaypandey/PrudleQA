@@ -1,5 +1,20 @@
 
 var statusDisplay = null;
+
+// Initialize Firebase
+  var fire_config = {
+    apiKey: "AIzaSyAwRZpTOHPbcnA9nrqqhzWmyKml611U-X8",
+    authDomain: "prudle-qa-5d4fd.firebaseapp.com",
+    databaseURL: "https://prudle-qa-5d4fd.firebaseio.com",
+    projectId: "prudle-qa-5d4fd",
+    storageBucket: "prudle-qa-5d4fd.appspot.com",
+    messagingSenderId: "992595635225"
+  };
+  firebase.initializeApp(fire_config);
+
+  // Get a reference to the database service
+  //var fire_database = firebase.database();
+
 // POST the data to the server using XMLHttpRequest
 function login() {
     // Cancel the form submit
@@ -11,7 +26,10 @@ function login() {
     var pass = document.getElementById('password').value;
 
     if(isEmpty(jiraUrl) || isEmpty(user) || isEmpty(pass)){
-        openMsgSnackbar("Oops! You missed some fields ");
+        openMsgSnackbar("Oops! You missed some fields. ");
+        return;
+    }else if(!firebase.auth().currentUser){
+        openMsgSnackbar("Access denied");
         return;
     }
     var formData = {
@@ -36,24 +54,19 @@ function login() {
         },
         success: function(data) {
             if(data.session){
-                openMsgSnackbar('Logged In');
-
+                openMsgSnackbar('Logged in');
                 data.session.jiraUrl = jiraUrl;
                 saveSession(data);  
-
                 // enable report generation button if disabled;
                 chrome.runtime.getBackgroundPage(function (backgroundPage) {
                     // clear everything 
-                    backgroundPage.BG.enableJiraReporting();
-                        
+                    backgroundPage.BG.enableJiraReporting();         
                 });
-
-            }
-            
+            }      
         },
         error:function(data){
             if(!data.session){
-                openMsgSnackbar(data.responseJSON.errorMessages[0], 'red');
+                openMsgSnackbar('Something went wrong!', 'red');
                 var intvId = setInterval(function(){
                     $('#login-form input').val('');
                 },3000);
@@ -69,12 +82,24 @@ function login() {
     });
 }
 
+function firebaseLogin(){
+    event.preventDefault();
+
+    var email = document.getElementById('f-email').value;
+    var password = document.getElementById('f-password').value;
+
+    if(isEmpty(email) || isEmpty(password)){
+          openMsgSnackbar("Oops! You missed some fields.");
+          return;
+    }
+
+    startLogin(email,password);
+}
+
+
 function logout(){
     // Cancel the form submit
     event.preventDefault();
-
-    //var session = getSession();
-
 
     chrome.storage.local.get(null, function(items) {
         session= items;
@@ -96,8 +121,7 @@ function logout(){
                 success: function(data) {
                     //console.log(data);
                     if(data && data.status==401){
-                            statusDisplay.innerHTML = data.responseJSON.errorMessages[0];
-                            statusDisplay.style.color = "red";
+                            openMsgSnackbar(data.responseJSON.errorMessages[0]);
                     }else if(data && data.status==204){
 
                     }
@@ -112,7 +136,7 @@ function logout(){
                 },
                 complete:function(xhr,status){
                     chrome.storage.local.clear(function() {
-                        document.getElementById('logout-form').style.display = "none";
+                        document.getElementById('jira-logout-form').style.display = "none";
                         document.getElementById('login-form').style.display = "block";
                         document.getElementById('issues-btn').style.display = "none";
                         document.getElementById('project-drop-issues').style.display = "none";
@@ -138,9 +162,6 @@ function logout(){
 function loadIssues(){
     // Cancel the form submit
     event.preventDefault();
-
-    //var session = getSession();
-
 
     chrome.storage.local.get(null, function(items) {
         session= items;
@@ -190,7 +211,7 @@ function loadIssues(){
                     }
                 });
             }else{
-               openMsgSnackbar("Select project from dropdown first");
+               openMsgSnackbar("Select project from dropdown");
             }
            
         }
@@ -206,9 +227,8 @@ function isEmpty(value){
 function saveSession(responseData){
     var session = responseData.session;
     var logInfo = responseData.loginInfo;
-    console.log(responseData);
     chrome.storage.local.set({'name': session.name,'value': session.value,'jiraUrl':session.jiraUrl}, function() {
-        document.getElementById('logout-form').style.display = "block";
+        document.getElementById('jira-logout-form').style.display = "block";
         document.getElementById('login-form').style.display = "none";
         document.getElementById('tools-btn').style.display = "block";
         document.getElementById('issues-btn').style.display = "block";
@@ -225,7 +245,7 @@ function getSession(){
     chrome.storage.local.get(null, function(items) {
         session= items;
         if(items.name && items.value && items.jiraUrl){
-            document.getElementById('logout-form').style.display = "block";
+            document.getElementById('jira-logout-form').style.display = "block";
             document.getElementById('login-form').style.display = "none";
             document.getElementById('tools-btn').style.display = "block";
             document.getElementById('issues-btn').style.display = "block";
@@ -250,12 +270,6 @@ function loadTools(){
             
     });
 
-    // chrome.storage.local.get(null, function(items) {
-    //     if(items.name && items.value && items.jiraUrl){
-            
-    //     }
-    // });
-   
 }
 
 function loadProjectList(jiraUrl){
@@ -266,49 +280,131 @@ function loadProjectList(jiraUrl){
                 $('#project-drop-issues').html('');
                 $('<option value="">Select Project</option>').appendTo('#project-drop-issues');
                 $.each(data,function(i){
-                    $('<option value="'+data[i].key+'">'+data[i].key+'</option>').appendTo('#project-drop-issues');
+                    $('<option value="'+data[i].key+'">'+data[i].name+'</option>').appendTo('#project-drop-issues');
                 });
             }
         });
 }
 
 function openSnackbar() {
-    // Get the snackbar DIV
-    var x = document.getElementById("about_snackbar");
-
-    // Add the "show" class to DIV
+    var x = document.getElementById("about-snackbar");
     x.className = "show";
-
-    // After 3 seconds, remove the show class from DIV
     setTimeout(function(){ x.className = x.className.replace("show", ""); }, 5000);
 }
 
 function openMsgSnackbar(content) {
-    // Get the snackbar DIV
-    var x = document.getElementById("msg_snackbar");
-    // x.style.color = '#536DFE';
+    var x = document.getElementById("msg-snackbar");
     x.innerHTML = content;
-
-    // Add the "show" class to DIV
     x.className = "show";
-
-    // After 3 seconds, remove the show class from DIV
     setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+}
+
+function initApp() {
+    // Listen for auth state changes.
+    // [START authstatelistener]
+    firebase.auth().onAuthStateChanged(function(user) {
+        if (user) {
+        // User is signed in.
+        document.getElementById('f-signin-container').style.display = 'none';
+        document.getElementById('jira-container').style.display = 'block';
+        document.getElementById('f-logout-form').style.display = 'block';
+        
+        } else {
+            document.getElementById('jira-container').style.display = 'none';
+            document.getElementById('f-signin-container').style.display = 'block';
+            document.getElementById('f-logout-form').style.display = 'none';
+            //openMsgSnackbar("Please login");
+        }
+    });
+
+}
+
+function startAuth(email,password) {
+
+    firebase.auth().signInWithEmailAndPassword(email, password).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage;
+        switch(errorCode){
+            case 'auth/invalid-email':
+                errorMessage = 'Invalid email';
+            break;
+            case 'auth/wrong-password':
+                errorMessage = 'Wrong Password';
+            break;
+            case 'auth/user-disabled':
+                errorMessage = 'The given user has been disabled.';
+            break;
+            case 'auth/user-not-found':
+                errorMessage = 'There is no user corresponding to the given email.'
+            break;
+            default:
+            errorMessage = error.message;
+        }
+
+        openMsgSnackbar(errorMessage);
+    });
+}
+
+/**
+ * Starts the sign-in process.
+ */
+ function startLogin(email,password) {
+    //document.getElementById('quickstart-button').disabled = true;
+    if (firebase.auth().currentUser) {
+        firebase.auth().signOut();
+    } else {
+        startAuth(email,password);
+    }
+}
+
+/**
+ * Starts the sign-out process.
+ */
+ function startLogout() {
+    firebase.auth().signOut().then(function() {
+        logout();
+        openMsgSnackbar("Logged out");
+    // Sign-out successful.
+    }).catch(function(error) {
+    // An error happened.
+        openMsgSnackbar("You are not logged in");
+    });
+   
 }
 
 // When the popup HTML has loaded
 window.addEventListener('load', function(evt) {
+    // initilize firebase services 
+    initApp();
+
+    //show splash till data gets loaded 
+    document.getElementById('splash').style.display = 'block';
+    window.setTimeout(function(){
+        document.getElementById('splash').style.display = 'none';
+    },2000);
+
     // check for existing session on extension icon click
     chrome.browserAction.onClicked.addListener(getSession());
 
     // Handle the form submit event with our signinfunction
     document.getElementById('login-form').addEventListener('submit', login);
-    document.getElementById('logout-form').addEventListener('submit', logout);
+    document.getElementById('jira-logout-form').addEventListener('submit', logout);
+    document.getElementById('f-logout-form').addEventListener('submit', startLogout);
     document.getElementById('tools-btn').addEventListener('click', loadTools);
     document.getElementById('issues-btn').addEventListener('click', loadIssues);
     document.getElementById("abt_btn").addEventListener("click", openSnackbar);
+    document.getElementById('f-signin-btn').addEventListener('click', firebaseLogin);
     
+    // load version no.
+    var manifestData = chrome.runtime.getManifest();
+    document.getElementById('qa-version-no').innerText = 'Version '+ manifestData.version ;
+
 });
+
+
+
+
 
 
 

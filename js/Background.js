@@ -1,4 +1,4 @@
-//captureAPI 
+
 
 window.CaptureAPI = (function() {
 
@@ -264,7 +264,7 @@ window.CaptureAPI = (function() {
                 //
                 return true;
             } else {
-                console.error('Unknown message received from content script: ' + request.msg);
+                //console.error('Unknown message received from content script: ' + request.msg);
                 errback('internal error');
                 return false;
             }
@@ -272,8 +272,8 @@ window.CaptureAPI = (function() {
 
         chrome.tabs.executeScript(tab.id, {file: 'js/screenshot/page.js'}, function() {
             if (timedOut) {
-                console.error('Timed out too early while waiting for ' +
-                              'chrome.tabs.executeScript. Try increasing the timeout.');
+                // console.error('Timed out too early while waiting for ' +
+                //               'chrome.tabs.executeScript. Try increasing the timeout.');
             } else {
                 loaded = true;
                 progress(0);
@@ -414,18 +414,19 @@ function splitnotifier() {
 
 var BG = {
     init: function() {
-         chrome.runtime.onMessage.addListener(function(a, b, c) {
-            if ("openJiraModal" === a.method){ BG.openJiraModal(c)}
-            else if ("takeScreenShotAndSave" === a.method){ BG.takeScreenShotAndSave()}
-            else if ("takeWindowScreenShotAndSave" === a.method){ BG.takeWindowScreenShotAndSave()}
-            else if ("createIssue" === a.method){ BG.createIssue(a.data); }
-            else if ("clearEverythingOnLogout" === a.method){ BG.clearEverythingOnLogout(); }
-            else if ("enableJiraReporting" === a.method){ BG.enableJiraReporting(); }
-            else if ("disableJiraReporting" === a.method){ BG.disableJiraReporting(); }
-            else if ("get_pixel_color" === a.method) {
-                var d = a.point;
-                BG.getPixelColor(d, c)
-            } else "save_data" === a.method ? BG.saveData(a.config) : "get_data" === a.method && BG.getData(c);
+         chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+            if ("openJiraModal" === request.method){ BG.openJiraModal(sendResponse)}
+            else if ("takeScreenShotAndSave" === request.method){ BG.takeScreenShotAndSave()}
+            else if ("takeWindowScreenShotAndSave" === request.method){ BG.takeWindowScreenShotAndSave()}
+            else if ("createIssue" === request.method){ BG.createIssue(request.data,sendResponse); }
+            else if ("clearEverythingOnLogout" === request.method){ BG.clearEverythingOnLogout(); }
+            else if ("enableJiraReporting" === request.method){ BG.enableJiraReporting(); }
+            else if ("disableJiraReporting" === request.method){ BG.disableJiraReporting(); }
+            else if ("initFirebaseLogin" === request.method){ BG.performFirebaseLoginWithEmailAndPassword(request.data) }
+            else if ("get_pixel_color" === request.method) {
+                var d = request.point;
+                BG.getPixelColor(d, sendResponse)
+            } else "save_data" === request.method ? BG.saveData(request.config) : "get_data" === request.method && BG.getData(sendResponse);
             return !0
         });   
     },
@@ -537,17 +538,6 @@ var BG = {
                 });
             });
 
-            // chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            //     var tab = tabs[0];
-            //     currentTab = tab; // used in later calls to get tab info
-
-            //     var filename = getFilename(tab.url);
-
-            //     CaptureAPI.captureToFiles(tab, filename, injectJiraModal,
-            //                             errorHandler, progress, splitnotifier);
-                                        
-            // });
-
             
     },
 
@@ -633,11 +623,10 @@ var BG = {
         return new Blob([ia], {type:mimeString});
     },
 
-    createIssue: function (fdata){
+    createIssue: function (fdata,sendResponse){
          var status;
          chrome.storage.local.get(null, function(items) {
             if(items.name && items.value && items.jiraUrl){
-                console.log(fdata.issueData);
                 var jiraUrl = items.jiraUrl;
                 $.ajax({
                     url: "https://"+jiraUrl+"/rest/api/2/issue/",
@@ -649,7 +638,6 @@ var BG = {
                     },
                     contentType: "application/json",
                     success: function(data) {
-                        
                         issueKeyid = data.key;
                         if(fdata.includeScreenshot){
                             
@@ -657,7 +645,6 @@ var BG = {
                                     if(items.screenshotImg && items.screenshotImg!==''){
 
                                         var blob = BG.dataURItoBlob(items.screenshotImg);
-                                        //var blob = items.screenshotImg;
                                         var fd = new FormData();
                                         fd.append("file", blob,issueKeyid+"_screenshot.png");
                                         fd.append('comment', "screenshot");
@@ -675,13 +662,15 @@ var BG = {
                                             success: function(data) {
                                                 status = "success";
                                                 alert("Issue ID "+issueKeyid+" created successfully");
-                                                
-                                                
+                                                sendResponse(status);
+                                
                                             },
-                                            error:function(data){
+                                            error: function(data){
+                                                console.log(data);
                                                 status = "failed";
-                                                alert("Could not create issue. Something went wrong !!");
-                                            
+                                                alert("Could not the create issue. Something went wrong !!");
+                                                sendResponse(status);
+
                                             }
                                         });
                         
@@ -689,19 +678,22 @@ var BG = {
                                 });
                         }else{
                             alert("Issue ID "+issueKeyid+" created successfully");
+                            sendResponse(status);
                         }
                            
                     },
-                    error: function(){
+                    error: function(data){
+                        console.log(data);
                         status = "failed";
-                        alert("Could not create issue. Something went wrong !!");
+                        alert("Could not create the issue. Something went wrong !!");
+                        sendResponse(status);
                     }
                 });
 
          }
 
          });
-        return status;
+
     },
 
     clearEverythingOnLogout: function(){
@@ -725,5 +717,7 @@ var BG = {
 
     }
 
-};
-BG.init();
+    };
+
+   BG.init();
+

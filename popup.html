@@ -12,15 +12,16 @@
 		<link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
 
         <style>
+            body{
+                font-size: 12px;
+            }
             .popup_header{
-                height: 40px;
+                height: 60px;
                 padding-top: 5px;
                 padding-left: 5px;
                 color: #28b473;
-                line-height: 19px;
+                line-height: 25px;
                 border-bottom: 1px solid rgba(0,0,0,0.06);
-                padding-bottom: 40px;
-                
             }
 
             .popup_header a{
@@ -28,6 +29,7 @@
                 text-align: center;
                 font-size: 15px;
                 float: left;
+                padding-top : 5px;
             }
 
             .popup_footer{
@@ -47,11 +49,11 @@
                 text-decoration: none;
             }
 
-            .footer_btn:hover{
+            .about_btn:hover{
                 color: #5b5b5e;
             }
 
-            .home_btn{
+            .qa-version-no{
                 float: right;
             }
 
@@ -60,25 +62,26 @@
             }
 
             /* The snackbar - position it at the bottom and in the middle of the screen */
-            #about_snackbar {
+            #about-snackbar {
                 visibility: hidden; /* Hidden by default. Visible on click */
                 min-width: 250px; /* Set a default minimum width */
-                margin-left: -125px; /* Divide value of min-width by 2 */
-                background-color: #fff; /* Black background color */
-                color: #333; /* White text color */
+                margin-left: -150px; /* Divide value of min-width by 2 */
+                background-color: #333; /* Black background color */
+                color: #fff; /* White text color */
                 text-align: center; /* Centered text */
+                font-size: 12px;
                 border-radius: 2px; /* Rounded borders */
-                padding: 16px; /* Padding */
+                padding: 15px; /* Padding */
                 position: fixed; /* Sit on top of the screen */
                 z-index: 1; /* Add a z-index if needed */
                 left: 50%; /* Center the snackbar */
                 bottom: 0px; /* 30px from the bottom */
-                height: 360px;
+                height: auto;
                 opacity: 1;
             }
 
             /* Show the snackbar when clicking on a button (class added with JavaScript) */
-            #about_snackbar.show {
+            #about-snackbar.show {
                 visibility: visible; /* Show the snackbar */
 
             /* Add animation: Take 0.5 seconds to fade in and out the snackbar. 
@@ -88,10 +91,10 @@
             }
 
             /* The snackbar - position it at the bottom and in the middle of the screen */
-            #msg_snackbar {
+            #msg-snackbar {
                 visibility: hidden; /* Hidden by default. Visible on click */
-                min-width: 250px; /* Set a default minimum width */
-                margin-left: -125px; /* Divide value of min-width by 2 */
+                min-width: 290px; /* Set a default minimum width */
+                margin-left: -145px; /* Divide value of min-width by 2 */
                 background-color: #333; /* Black background color */
                 color: #fff; /* White text color */
                 text-align: center; /* Centered text */
@@ -106,7 +109,7 @@
             }
 
             /* Show the snackbar when clicking on a button (class added with JavaScript) */
-            #msg_snackbar.show {
+            #msg-snackbar.show {
                 visibility: visible; /* Show the snackbar */
 
             /* Add animation: Take 0.5 seconds to fade in and out the snackbar. 
@@ -157,95 +160,238 @@
                 to {bottom: -50px; opacity: 0;}
             }
 
+            body {
+                background-color:  #fff;
+            }
+
+            .showbox {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                padding: 5%;
+                z-index: 5;
+                background-color: #fff;
+            }
+
+            .loader {
+                position: relative;
+                margin: 50px auto;
+                width: 100px;
+            }
+
+            .loader:before {
+                content: '';
+                display: block;
+                padding-top: 100%;
+            }
+
+            .circular {
+                animation: rotate 2s linear infinite;
+                height: 100%;
+                transform-origin: center center;
+                width: 100%;
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                margin: auto;
+            }
+
+            .path {
+                stroke-dasharray: 1, 200;
+                stroke-dashoffset: 0;
+                animation: dash 1.5s ease-in-out infinite, color 6s ease-in-out infinite;
+                stroke-linecap: round;
+            }
+
+            @keyframes rotate {
+            100% {
+                transform: rotate(360deg);
+            }
+            }
+
+            @keyframes dash {
+            0% {
+                stroke-dasharray: 1, 200;
+                stroke-dashoffset: 0;
+            }
+            50% {
+                stroke-dasharray: 89, 200;
+                stroke-dashoffset: -35px;
+            }
+            100% {
+                stroke-dasharray: 89, 200;
+                stroke-dashoffset: -124px;
+            }
+            }
+
+            @keyframes color {
+            100%,
+            0% {
+                stroke: #d62d20;
+            }
+            40% {
+                stroke: #0057e7;
+            }
+            66% {
+                stroke: #008744;
+            }
+            80%,
+            90% {
+                stroke:  #ffa700;
+            }
+            }
+
+            #f-logout-btn{
+                width: 80px;
+            }
+
+            #jira-logout-btn{
+                width: 80px;
+            }
+
+            .loader img {
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 40px;
+                height: 40px;
+                margin:-20px 0 0 -20px;
+                -webkit-animation:spin 4s linear infinite;
+                -moz-animation:spin 4s linear infinite;
+                animation:spin 4s linear infinite;
+            }
+            @-moz-keyframes spin { 100% { -moz-transform: rotateY(360deg); } }
+            @-webkit-keyframes spin { 100% { -webkit-transform: rotateY(360deg); } }
+            @keyframes spin { 100% { -webkit-transform: rotateY(360deg); transform:rotateY(360deg); } }
 
         </style>
 	</head>
 	
 	<body>
-	
-		<div class="container" style="width:260px;height:100px;">
-
+        <div id="splash" class="showbox">
+            <div class="loader">
+                <img class="image" src="/images/icon128.png" alt="loader">
+            </div>
+        </div>
+		<div class="container" style="width:300px;min-height:100px;">
             <div class="popup_header row" >
                 <div class="col-xs-8">
                     <a target="_blank" href="http://www.prudlelabs.com" class=""><img src="/images/prudle-logo-38.png" alt="Prudle Logo"></a>
                 </div>
-                <div class="col-xs-2">
-                    <form id="logout-form" style="display: none">
-                            <button type="submit" class="btn btn-primary btn-sm " id="jira-logout-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Logging out">Log out</button>
+                <div class="col-xs-3">
+                     <form id="f-logout-form" style="display: none">
+                        <button type="submit" class="btn btn-danger btn-xs " id="f-logout-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Logging out">Logout Tool</button>
                     </form>
-             
+                    <form id="jira-logout-form" style="display: none">
+                        <button type="submit" class="btn btn-primary btn-xs " id="jira-logout-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Logging out">Logout JIRA</button>
+                    </form>
+                   
+                
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-4">
-                    <form id="login-form">
-                           <h5 class="form-signin-heading">Please log into JIRA</h5>    
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="jiraUrl" name="jiraUrl" placeholder="JIRA url : example.atlassian.net">
-                        </div>
-                        <div class="form-group">
-                            <input type="text" class="form-control" id="username" name="username" placeholder="Username">
-                        </div>
-                        <div class="form-group">
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Password">
-                        </div>
+            <div id="jira-container" class="container" style="display: none;">
+                <div class="row">
+                    <div class="col-md-4">
+                        <form id="login-form">
+                            <h5 class="form-signin-heading">Please login to JIRA</h5>    
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="jiraUrl" name="jiraUrl" placeholder="JIRA url : example.atlassian.net">
+                            </div>
+                            <div class="form-group">
+                                <input type="text" class="form-control" id="username" name="username" placeholder="Username">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Password">
+                            </div>
 
-                        <button type="submit" class="btn btn-primary btn-block  btn-sm " id="jira-auth-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Signing In">Sign In</button> 
+                            <button type="submit" class="btn btn-primary btn-block  btn-sm " id="jira-auth-btn" data-loading-text="<i class='fa fa-circle-o-notch fa-spin'></i> Signing In">Sign In</button> 
+                            
+                        </form>
                         
-                    </form>
-                    
+                    </div>
+                    <br/>
+                    <div class="col-md-4" >
+                            <button class="btn btn-primary btn-block btn-sm" id="tools-btn">View Toolbar</button>
+                    </div><br/>
+
+                    <div class="col-md-4" >
+                        <select class="form-control" id="project-drop-issues" style="display: none">
+                        </select>
+                    </div><br/>
+                    <div class="col-md-4" >
+                            <button class="btn btn-primary  btn-block btn-sm" id="issues-btn" style="display: none">View Issues</button>
+                    </div>
+
                 </div>
-                <br/>
-                 <div class="col-md-4" >
-                        <button class="btn btn-primary btn-block btn-sm" id="tools-btn">View Toolbar</button>
-                 </div><br/>
-
-                <div class="col-md-4" >
-                    <select class="form-control" id="project-drop-issues" style="display: none">
-                    </select>
-                </div><br/>
-                 <div class="col-md-4" >
-                        <button class="btn btn-primary  btn-block btn-sm" id="issues-btn" style="display: none">View issues</button>
-                 </div>
-                    
-                <div id="msg_snackbar"></div>
-               
-
-            </div>
-            <div class='row'>
-                <div class="col-md-9">
-                    <table id="issues-table" class="table" style="display:none;">
-                        <thead>
-                        <tr><td><p class="form-signin-heading">List of recently reported issues </p></td></tr>
-                        <tr>
-                            <td>ID</td>
-                            <td>Name</td>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <tr id='r0'></tr>
-                        </tbody>
-                    </table>
+                <div class='row'>
+                    <div class="col-md-9">
+                        <table id="issues-table" class="table" style="display:none;">
+                            <thead>
+                            <tr><td><p class="form-signin-heading">List of recently reported issues </p></td></tr>
+                            <tr>
+                                <td>ID</td>
+                                <td>Name</td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                <tr id='r0'></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
+            <div id="f-signin-container" class="container" style="margin-top:20px;">
+                <div class="row">
+                    <div class="col-md-4">
+                        <p>Login to Prudle QA account</p>
+                        <form id="f-login-form">   
+                            <div class="form-group">
+                                <input type="email" class="form-control" id="f-email" name="f-email" placeholder="Email">
+                            </div>
+                            <div class="form-group">
+                                <input type="password" class="form-control" id="f-password" name="f-password" placeholder="Password">
+                            </div>
+
+                            <button type="submit" class="btn btn-primary btn-block  btn-sm " id="f-signin-btn" data-loading-text="<i class=''></i> Logging In">Login</button> 
+                            
+                        </form>
+                        
+                    </div>
+                </div>
+
+            </div>
+        
             <div class='popup_footer row'>
                 <div class="col-sm-9">
                     <a href="#" id="abt_btn" class="footer_btn about_btn" >About</a>
                 </div>
-                <div class="col-sm-3">
-                    <a href="https://www.prudlelabs.com" target="_blank" class="footer_btn home_btn">Prudle Home</a>
+                <div class="col-sm-9">
+                    <span id="qa-version-no" class="footer_btn qa-version-no" ></span>
                 </div>
+                <!--<div class="col-sm-3">
+                    <a href="https://www.prudlelabs.com" target="_blank" class="footer_btn home_btn">Prudle Home</a>
+                </div>-->
             </div>
 
-            <div id="about_snackbar">Prudle’s Localization QA module significantly reduces manual effort, save upto 50% defect raising time and increases overall efficiency. L10N  testers do not have to switch between windows to capture screenshots and raise localization defects. It allows LQA testers to be focused on what needs to be validated.</div>
+        </div>
 
+        <div id="msg-snackbar"></div>
+        <div id="about-snackbar">
+            Prudle’s Localization QA module significantly reduces manual effort, save upto 50% defect raising time and increases overall efficiency.<br/    >
+            <b><a href="http://prudlelabs.com/end-user-license-agreement/" target="_blank" class="footer_btn " >End user license agreement</a></b>
         </div>
 	
     <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/3.9.0/firebase.js"></script>
     <script src="js/lib/jquery.js"></script>
     <script src="js/lib/bootstrap.min.js"></script>
     <script type="text/javascript" src="js/popup.js"></script>
+
 
 </body>
     

@@ -1,11 +1,11 @@
 {
     "name": "Prudle QA",
-    "version": "1.0.3",
+    "version": "1.1.1",
     "manifest_version": 2,
     "description": "Prudle’s QA module significantly reduces manual effort, save upto 50% defect raising time and increases overall efficiency",
     "background": {
-        "scripts": ["js/Background.js","js/lib/jquery.js"],
-        "persistent": false
+        "persistent": false,
+        "scripts": ["js/Background.js","js/lib/jquery.js"]
     },
     "browser_action": {
         "default_title": "Prudle QA",
@@ -17,9 +17,9 @@
         "48": "images/icon48.png",
         "128": "images/icon128.png"
     },
-    "permissions": ["tabs", "activeTab", "<all_urls>","storage"],
-    "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
-    "web_accessible_resources": ["images/*.png","js/lib/bootstrap.min.js","js/popup.js","js/modal.js"],
+    "permissions": ["tabs", "activeTab", "<all_urls>","storage","identity", "https://accounts.google.com/*", "https://www.googleapis.com/*"],
+     "content_security_policy": "script-src 'self' https://www.gstatic.com/ https://*.firebaseio.com https://www.googleapis.com; object-src 'self'",
+    "web_accessible_resources": ["images/*.png","images/*.gif","js/lib/bootstrap.min.js","js/popup.js","js/modal.js"],
     "externally_connectable": {
         "matches": []
     }
